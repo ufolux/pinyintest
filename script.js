@@ -278,49 +278,6 @@ let currentSelection = {
   shengdiao: null,
 };
 
-// 练习模式和计分系统
-let practiceMode = {
-  isActive: false,
-  level: "beginner", // 'beginner', 'intermediate', 'advanced'
-  score: 0,
-  attempts: 0,
-  correct: 0,
-  targetPinyin: null,
-  targetCharacter: null,
-  practiceType: "free", // 'free', 'guided', 'quiz'
-};
-
-// 难度等级配置
-const difficultyLevels = {
-  beginner: {
-    name: "初级",
-    shengmu: ["b", "p", "m", "f", "d", "t", "n", "l"],
-    yunmu: ["a", "o", "e", "i", "u", "ai", "ei", "ao", "ou"],
-    description: "基础声母和简单韵母",
-  },
-  intermediate: {
-    name: "中级",
-    shengmu: ["g", "k", "h", "j", "q", "x", "z", "c", "s"],
-    yunmu: ["ie", "üe", "an", "en", "in", "un", "ün", "ang", "eng"],
-    description: "更多声母和复合韵母",
-  },
-  advanced: {
-    name: "高级",
-    shengmu: ["zh", "ch", "sh", "r"],
-    yunmu: [
-      "iu",
-      "ui",
-      "ing",
-      "ong",
-      "uai",
-      "uei",
-      "uan",
-      "uang",
-    ],
-    description: "翘舌音和复杂韵母组合",
-  },
-};
-
 // DOM 元素
 let elements = {};
 
@@ -344,20 +301,6 @@ function initializeElements() {
     shengdiaoGrid: document.getElementById("shengdiao-grid"),
     clearButton: document.getElementById("clear-button"),
     randomButton: document.getElementById("random-button"),
-    // Practice mode elements
-    difficultySelect: document.getElementById("difficulty-select"),
-    practiceTypeSelect: document.getElementById("practice-type-select"),
-    startPracticeBtn: document.getElementById("start-practice"),
-    stopPracticeBtn: document.getElementById("stop-practice"),
-    practiceStatus: document.getElementById("practice-status"),
-    currentScore: document.getElementById("current-score"),
-    correctCount: document.getElementById("correct-count"),
-    totalAttempts: document.getElementById("total-attempts"),
-    accuracy: document.getElementById("accuracy"),
-    practiceTarget: document.getElementById("practice-target"),
-    targetPinyin: document.getElementById("target-pinyin"),
-    targetCharacter: document.getElementById("target-character"),
-    practiceFeedback: document.getElementById("practice-feedback"),
   };
 }
 
@@ -1362,8 +1305,6 @@ const pinyinCharacterMap = {
   lu0: "路",
 };
 
-// 练习模式功能
-
 function addToneToVowel(vowel, tone) {
   if (tone === 0) return vowel; // 轻声不加标记
 
@@ -1996,7 +1937,7 @@ function findCommonCharacterByPinyin(pinyinText, tone) {
     hao: ["好", "好", "好", "号", "好"],
 
     // 更多韵母组合
-    bou: ["剥", "剥", "剥", "剥", "剥"],  // bou是有效拼音
+    bou: ["剥", "剥", "剥", "剥", "剥"], // bou是有效拼音
     pou: ["剖", "剖", "剖", "剖", "剖"],
     mou: ["谋", "谋", "某", "谋", "谋"],
     fou: ["否", "否", "否", "否", "否"],
@@ -2328,16 +2269,6 @@ function bindEvents() {
 
   // 随机按钮
   elements.randomButton.onclick = generateRandomCombination;
-
-  // 练习模式按钮
-  elements.startPracticeBtn.onclick = startPractice;
-  elements.stopPracticeBtn.onclick = stopPractice;
-
-  // 难度选择器
-  elements.difficultySelect.onchange = onDifficultyChange;
-
-  // 练习类型选择器
-  elements.practiceTypeSelect.onchange = onPracticeTypeChange;
 }
 
 // 播放发音功能
@@ -2360,7 +2291,7 @@ function playPronunciation() {
     utterance.lang = "zh-CN";
     utterance.rate = 0.8;
     utterance.pitch = 1;
-    
+
     speechSynthesis.speak(utterance);
   } else {
     showError("找不到对应的汉字进行发音！");
@@ -2383,13 +2314,13 @@ function clearSelection() {
   elements.playButton.disabled = true;
 
   // 清除选中状态
-  document.querySelectorAll(".selection-button.selected").forEach(btn => {
+  document.querySelectorAll(".selection-button.selected").forEach((btn) => {
     btn.classList.remove("selected");
   });
-  document.querySelectorAll(".tone-button.selected").forEach(btn => {
+  document.querySelectorAll(".tone-button.selected").forEach((btn) => {
     btn.classList.remove("selected");
   });
-  document.querySelectorAll(".pinyin-part.selected").forEach(part => {
+  document.querySelectorAll(".pinyin-part.selected").forEach((part) => {
     part.classList.remove("selected");
   });
 
@@ -2398,31 +2329,26 @@ function clearSelection() {
 
 // 生成随机组合
 function generateRandomCombination() {
-  // 从当前难度级别中选择，如果在练习模式中
   let availableShengmu = pinyinData.shengmu;
   let availableYunmu = pinyinData.yunmu;
-
-  if (practiceMode.isActive) {
-    const level = difficultyLevels[practiceMode.level];
-    availableShengmu = level.shengmu;
-    availableYunmu = level.yunmu;
-  }
 
   let attempts = 0;
   const maxAttempts = 100;
 
   while (attempts < maxAttempts) {
-    const randomShengmu = availableShengmu[Math.floor(Math.random() * availableShengmu.length)];
-    const randomYunmu = availableYunmu[Math.floor(Math.random() * availableYunmu.length)];
+    const randomShengmu =
+      availableShengmu[Math.floor(Math.random() * availableShengmu.length)];
+    const randomYunmu =
+      availableYunmu[Math.floor(Math.random() * availableYunmu.length)];
 
     if (isValidCombination(randomShengmu, randomYunmu)) {
       // 找到对应的按钮
-      const shengmuButtons = document.querySelectorAll('.shengmu-button');
-      const yunmuButtons = document.querySelectorAll('.yunmu-button');
-      
+      const shengmuButtons = document.querySelectorAll(".shengmu-button");
+      const yunmuButtons = document.querySelectorAll(".yunmu-button");
+
       let shengmuButton = null;
       let yunmuButton = null;
-      
+
       // 查找声母按钮
       for (let btn of shengmuButtons) {
         if (btn.textContent === randomShengmu) {
@@ -2430,7 +2356,7 @@ function generateRandomCombination() {
           break;
         }
       }
-      
+
       // 查找韵母按钮
       for (let btn of yunmuButtons) {
         if (btn.textContent === randomYunmu) {
@@ -2438,16 +2364,22 @@ function generateRandomCombination() {
           break;
         }
       }
-      
+
       // 模拟点击按钮
       if (shengmuButton) selectShengmu(randomShengmu, shengmuButton);
       if (yunmuButton) selectYunmu(randomYunmu, yunmuButton);
 
       // 随机选择声调
-      const randomTone = pinyinData.shengdiao[Math.floor(Math.random() * pinyinData.shengdiao.length)];
-      const toneButtons = document.querySelectorAll('.tone-button');
-      const toneIndex = pinyinData.shengdiao.findIndex(t => t.tone === randomTone.tone);
-      if (toneButtons[toneIndex]) selectShengdiao(randomTone, toneButtons[toneIndex]);
+      const randomTone =
+        pinyinData.shengdiao[
+          Math.floor(Math.random() * pinyinData.shengdiao.length)
+        ];
+      const toneButtons = document.querySelectorAll(".tone-button");
+      const toneIndex = pinyinData.shengdiao.findIndex(
+        (t) => t.tone === randomTone.tone
+      );
+      if (toneButtons[toneIndex])
+        selectShengdiao(randomTone, toneButtons[toneIndex]);
 
       break;
     }
@@ -2458,183 +2390,6 @@ function generateRandomCombination() {
     showError("无法生成有效的随机组合！");
   }
 }
-
-// 练习模式功能
-function startPractice() {
-  practiceMode.isActive = true;
-  practiceMode.level = elements.difficultySelect.value;
-  practiceMode.practiceType = elements.practiceTypeSelect.value;
-  practiceMode.score = 0;
-  practiceMode.attempts = 0;
-  practiceMode.correct = 0;
-
-  // 更新UI
-  elements.startPracticeBtn.style.display = "none";
-  elements.stopPracticeBtn.style.display = "inline-block";
-  elements.practiceStatus.style.display = "block";
-  elements.practiceTarget.style.display = "block";
-
-  updateScoreDisplay();
-  generatePracticeTarget();
-
-  // 限制按钮选择范围
-  updateButtonsForPracticeMode();
-}
-
-function stopPractice() {
-  practiceMode.isActive = false;
-
-  // 更新UI
-  elements.startPracticeBtn.style.display = "inline-block";
-  elements.stopPracticeBtn.style.display = "none";
-  elements.practiceStatus.style.display = "none";
-  elements.practiceTarget.style.display = "none";
-
-  // 恢复所有按钮
-  restoreAllButtons();
-  clearSelection();
-  clearFeedback();
-}
-
-function generatePracticeTarget() {
-  const level = difficultyLevels[practiceMode.level];
-  let attempts = 0;
-  const maxAttempts = 100;
-
-  while (attempts < maxAttempts) {
-    const randomShengmu = level.shengmu[Math.floor(Math.random() * level.shengmu.length)];
-    const randomYunmu = level.yunmu[Math.floor(Math.random() * level.yunmu.length)];
-
-    if (isValidCombination(randomShengmu, randomYunmu)) {
-      const randomTone = Math.floor(Math.random() * 4) + 1;
-      
-      practiceMode.targetPinyin = randomShengmu + randomYunmu;
-      practiceMode.targetShengmu = randomShengmu;
-      practiceMode.targetYunmu = randomYunmu;
-      practiceMode.targetTone = randomTone;
-      
-      // 查找对应汉字
-      practiceMode.targetCharacter = getCharacterForPronunciation(randomShengmu, randomYunmu, randomTone) || "？";
-
-      // 更新UI显示
-      const fullPinyin = addToneMarks(practiceMode.targetPinyin, randomTone);
-      elements.targetPinyin.textContent = fullPinyin;
-      elements.targetCharacter.textContent = practiceMode.targetCharacter;
-
-      clearFeedback();
-      break;
-    }
-    attempts++;
-  }
-
-  if (attempts >= maxAttempts) {
-    showError("无法生成练习目标！");
-  }
-}
-
-function checkPracticeAnswer() {
-  if (!practiceMode.isActive) return;
-
-  const userShengmu = currentSelection.shengmu;
-  const userYunmu = currentSelection.yunmu;
-  const userTone = currentSelection.shengdiao ? currentSelection.shengdiao.tone : null;
-
-  const isCorrect = userShengmu === practiceMode.targetShengmu && 
-                   userYunmu === practiceMode.targetYunmu && 
-                   userTone === practiceMode.targetTone;
-
-  practiceMode.attempts++;
-  
-  if (isCorrect) {
-    practiceMode.correct++;
-    practiceMode.score += getDifficultyScore();
-    showCorrectFeedback();
-    
-    // 延迟生成下一题
-    setTimeout(() => {
-      generatePracticeTarget();
-      clearSelection();
-    }, 2000);
-  } else {
-    showIncorrectFeedback();
-  }
-
-  updateScoreDisplay();
-}
-
-function getDifficultyScore() {
-  const scores = {
-    beginner: 10,
-    intermediate: 20,
-    advanced: 30
-  };
-  return scores[practiceMode.level] || 10;
-}
-
-function updateScoreDisplay() {
-  elements.currentScore.textContent = practiceMode.score;
-  elements.correctCount.textContent = practiceMode.correct;
-  elements.totalAttempts.textContent = practiceMode.attempts;
-  
-  const accuracy = practiceMode.attempts > 0 ? 
-    Math.round((practiceMode.correct / practiceMode.attempts) * 100) : 0;
-  elements.accuracy.textContent = accuracy + "%";
-}
-
-function showCorrectFeedback() {
-  elements.practiceFeedback.textContent = "🎉 正确！继续努力！";
-  elements.practiceFeedback.className = "practice-feedback correct";
-}
-
-function showIncorrectFeedback() {
-  const target = `${practiceMode.targetShengmu} + ${practiceMode.targetYunmu} (第${practiceMode.targetTone}声)`;
-  elements.practiceFeedback.textContent = `❌ 不正确。正确答案是：${target}`;
-  elements.practiceFeedback.className = "practice-feedback incorrect";
-}
-
-function clearFeedback() {
-  elements.practiceFeedback.textContent = "";
-  elements.practiceFeedback.className = "practice-feedback";
-}
-
-function updateButtonsForPracticeMode() {
-  if (!practiceMode.isActive) return;
-
-  const level = difficultyLevels[practiceMode.level];
-
-  // 隐藏不在当前难度的按钮
-  document.querySelectorAll('.shengmu-button').forEach(btn => {
-    const isAvailable = level.shengmu.includes(btn.textContent);
-    btn.style.display = isAvailable ? 'flex' : 'none';
-  });
-
-  document.querySelectorAll('.yunmu-button').forEach(btn => {
-    const isAvailable = level.yunmu.includes(btn.textContent);
-    btn.style.display = isAvailable ? 'flex' : 'none';
-  });
-}
-
-function restoreAllButtons() {
-  document.querySelectorAll('.selection-button').forEach(btn => {
-    btn.style.display = 'flex';
-  });
-}
-
-function onDifficultyChange() {
-  if (practiceMode.isActive) {
-    practiceMode.level = elements.difficultySelect.value;
-    updateButtonsForPracticeMode();
-    generatePracticeTarget();
-  }
-}
-
-function onPracticeTypeChange() {
-  if (practiceMode.isActive) {
-    practiceMode.practiceType = elements.practiceTypeSelect.value;
-    // 可以根据练习类型调整行为
-  }
-}
-
 // 错误显示函数
 function showError(message) {
   elements.errorMessage.textContent = message;

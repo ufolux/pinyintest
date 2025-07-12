@@ -1,265 +1,476 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>新拼音校验器测试</title>
     <style>
-        body { 
-            font-family: Arial, sans-serif; 
-            margin: 20px; 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            line-height: 1.6;
-        }
-        .test-section {
-            margin: 20px 0;
-            padding: 20px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 10px;
-            backdrop-filter: blur(10px);
-        }
-        .test-item {
-            margin: 10px 0;
-            padding: 15px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .valid { 
-            background: rgba(76, 175, 80, 0.3); 
-            border-left: 4px solid #4CAF50;
-        }
-        .invalid { 
-            background: rgba(244, 67, 54, 0.3); 
-            border-left: 4px solid #f44336;
-        }
-        .result { 
-            font-weight: bold; 
-            text-align: right;
-        }
-        .description {
-            font-size: 14px;
-            color: #ddd;
-        }
-        button {
-            padding: 10px 20px;
-            background: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            margin: 10px 5px;
-        }
-        button:hover { background: #45a049; }
-        .summary {
-            font-size: 18px;
-            text-align: center;
-            margin-top: 20px;
-            padding: 15px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 8px;
-        }
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        line-height: 1.6;
+      }
+      .test-section {
+        margin: 20px 0;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        backdrop-filter: blur(10px);
+      }
+      .test-item {
+        margin: 10px 0;
+        padding: 15px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .valid {
+        background: rgba(76, 175, 80, 0.3);
+        border-left: 4px solid #4caf50;
+      }
+      .invalid {
+        background: rgba(244, 67, 54, 0.3);
+        border-left: 4px solid #f44336;
+      }
+      .result {
+        font-weight: bold;
+        text-align: right;
+      }
+      .description {
+        font-size: 14px;
+        color: #ddd;
+      }
+      button {
+        padding: 10px 20px;
+        background: #4caf50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        margin: 10px 5px;
+      }
+      button:hover {
+        background: #45a049;
+      }
+      .summary {
+        font-size: 18px;
+        text-align: center;
+        margin-top: 20px;
+        padding: 15px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <h1>🔍 新拼音校验器测试（基于搭配表）</h1>
-    
+
     <div class="test-section">
-        <h2>基于博客的搭配表校验器</h2>
-        <p>参考：<a href="https://www.cnblogs.com/WindSnowLi/p/16998184.html" target="_blank" style="color: #90CAF9;">WindSnowLi的拼音校验器</a></p>
-        
-        <button onclick="runOuTests()">测试 ou 韵母组合</button>
-        <button onclick="runCommonTests()">测试常见组合</button>
-        <button onclick="runInvalidTests()">测试无效组合</button>
-        <button onclick="runAllTests()">运行全部测试</button>
-        
-        <div id="test-results"></div>
+      <h2>基于博客的搭配表校验器</h2>
+      <p>
+        参考：<a
+          href="https://www.cnblogs.com/WindSnowLi/p/16998184.html"
+          target="_blank"
+          style="color: #90caf9"
+          >WindSnowLi的拼音校验器</a
+        >
+      </p>
+
+      <button onclick="runOuTests()">测试 ou 韵母组合</button>
+      <button onclick="runCommonTests()">测试常见组合</button>
+      <button onclick="runInvalidTests()">测试无效组合</button>
+      <button onclick="runAllTests()">运行全部测试</button>
+
+      <div id="test-results"></div>
     </div>
 
     <script>
-        // 复制校验函数
-        function isValidCombination(shengmu, yunmu) {
-            const shengmuTable = ["", "b", "p", "m", "f", "d", "t", "n", "l", "g", "k", "h", "j", "q", "x", "z", "c", "s", "zh", "ch", "sh", "r", "y", "w"];
-            const yunmuTable = ["a", "o", "e", "i", "u", "ü", "ai", "ao", "an", "ang", "ou", "ong", "ei", "er", "en", "eng", "iu", "ie", "in", "ing", "ia", "iao", "ian", "iang", "iong", "ui", "un", "ua", "uai", "uan", "uang", "uo", "ue"];
-            
-            const combinationTable = [
-                "111111111111000111111011", // a
-                "100101111111000111111110", // o
-                "011101111000111111111110", // e
-                "011111111111000111111101", // i
-                "000000000000111000000010", // u
-                "111101111111000111111001", // ü
-                "111101111111000111111110", // ai
-                "111111111111000111111111", // ao
-                "111111111111000111111111", // an
-                "111111111111000111111110", // ang
-                "111111111111000111111110", // ou - 这一行对应 ou
-                "000001111111000111110110", // ong
-                "111111111111000110101001", // ei
-                "100000000000000000000000", // er
-                "111111010111000111111101", // en
-                "111111111111000111111101", // eng
-                "000101011000111000000000", // iu
-                "011101111000111000000000", // ie
-                "011100011000111000000010", // in
-                "011101111000111000000010", // ing
-                "000001001000111000000000", // ia
-                "011101111000111000000000", // iao
-                "011101111000111000000000", // ian
-                "000000011000111000000000", // iang
-                "000000000000111000000000", // iong
-                "000001100111000111111100", // ui
-                "000001111111111111111100", // un
-                "000000000111000000111100", // ua
-                "000000000111000000111000", // uai
-                "000001111111111111111110", // uan
-                "000000000111000000111000", // uang
-                "000001111111000111111100", // uo
-                "000000011000111000000010"  // ue
-            ];
-            
-            const shengmuIndex = shengmuTable.indexOf(shengmu);
-            const yunmuIndex = yunmuTable.indexOf(yunmu);
-            
-            if (shengmuIndex === -1 || yunmuIndex === -1) return false;
-            if (yunmuIndex >= combinationTable.length || shengmuIndex >= combinationTable[yunmuIndex].length) return false;
-            
-            return combinationTable[yunmuIndex][shengmuIndex] === '1';
+      // 复制校验函数
+      function isValidCombination(shengmu, yunmu) {
+        const shengmuTable = [
+          "",
+          "b",
+          "p",
+          "m",
+          "f",
+          "d",
+          "t",
+          "n",
+          "l",
+          "g",
+          "k",
+          "h",
+          "j",
+          "q",
+          "x",
+          "z",
+          "c",
+          "s",
+          "zh",
+          "ch",
+          "sh",
+          "r",
+          "y",
+          "w",
+        ];
+        const yunmuTable = [
+          "a",
+          "o",
+          "e",
+          "i",
+          "u",
+          "ü",
+          "ai",
+          "ao",
+          "an",
+          "ang",
+          "ou",
+          "ong",
+          "ei",
+          "er",
+          "en",
+          "eng",
+          "iu",
+          "ie",
+          "in",
+          "ing",
+          "ia",
+          "iao",
+          "ian",
+          "iang",
+          "iong",
+          "ui",
+          "un",
+          "ua",
+          "uai",
+          "uan",
+          "uang",
+          "uo",
+          "ue",
+        ];
+
+        const combinationTable = [
+          "111111111111000111111011", // a
+          "100101111111000111111110", // o
+          "011101111000111111111110", // e
+          "011111111111000111111101", // i
+          "000000000000111000000010", // u
+          "111101111111000111111001", // ü
+          "111101111111000111111110", // ai
+          "111111111111000111111111", // ao
+          "111111111111000111111111", // an
+          "111111111111000111111110", // ang
+          "111111111111000111111110", // ou - 这一行对应 ou
+          "000001111111000111110110", // ong
+          "111111111111000110101001", // ei
+          "100000000000000000000000", // er
+          "111111010111000111111101", // en
+          "111111111111000111111101", // eng
+          "000101011000111000000000", // iu
+          "011101111000111000000000", // ie
+          "011100011000111000000010", // in
+          "011101111000111000000010", // ing
+          "000001001000111000000000", // ia
+          "011101111000111000000000", // iao
+          "011101111000111000000000", // ian
+          "000000011000111000000000", // iang
+          "000000000000111000000000", // iong
+          "000001100111000111111100", // ui
+          "000001111111111111111100", // un
+          "000000000111000000111100", // ua
+          "000000000111000000111000", // uai
+          "000001111111111111111110", // uan
+          "000000000111000000111000", // uang
+          "000001111111000111111100", // uo
+          "000000011000111000000010", // ue
+        ];
+
+        const shengmuIndex = shengmuTable.indexOf(shengmu);
+        const yunmuIndex = yunmuTable.indexOf(yunmu);
+
+        if (shengmuIndex === -1 || yunmuIndex === -1) return false;
+        if (
+          yunmuIndex >= combinationTable.length ||
+          shengmuIndex >= combinationTable[yunmuIndex].length
+        )
+          return false;
+
+        return combinationTable[yunmuIndex][shengmuIndex] === "1";
+      }
+
+      function runTest(testCases, title) {
+        const container = document.getElementById("test-results");
+        let passCount = 0;
+
+        // 清空之前的结果
+        if (title === "ou 韵母组合测试") {
+          container.innerHTML = "";
         }
 
-        function runTest(testCases, title) {
-            const container = document.getElementById('test-results');
-            let passCount = 0;
-            
-            // 清空之前的结果
-            if (title === "ou 韵母组合测试") {
-                container.innerHTML = '';
-            }
-            
-            // 添加标题
-            const titleDiv = document.createElement('div');
-            titleDiv.innerHTML = `<h3>${title}</h3>`;
-            container.appendChild(titleDiv);
-            
-            testCases.forEach(test => {
-                const result = isValidCombination(test.shengmu, test.yunmu);
-                const passed = result === test.expected;
-                if (passed) passCount++;
-                
-                const div = document.createElement('div');
-                div.className = `test-item ${passed ? 'valid' : 'invalid'}`;
-                div.innerHTML = `
+        // 添加标题
+        const titleDiv = document.createElement("div");
+        titleDiv.innerHTML = `<h3>${title}</h3>`;
+        container.appendChild(titleDiv);
+
+        testCases.forEach((test) => {
+          const result = isValidCombination(test.shengmu, test.yunmu);
+          const passed = result === test.expected;
+          if (passed) passCount++;
+
+          const div = document.createElement("div");
+          div.className = `test-item ${passed ? "valid" : "invalid"}`;
+          div.innerHTML = `
                     <div>
-                        <strong>${test.shengmu || '∅'} + ${test.yunmu}</strong> → ${test.shengmu}${test.yunmu}
+                        <strong>${test.shengmu || "∅"} + ${
+            test.yunmu
+          }</strong> → ${test.shengmu}${test.yunmu}
                         <div class="description">${test.desc}</div>
                     </div>
                     <div class="result">
-                        ${passed ? '✅ 通过' : '❌ 失败'}
-                        <br><small>期望: ${test.expected ? '有效' : '无效'}, 实际: ${result ? '有效' : '无效'}</small>
+                        ${passed ? "✅ 通过" : "❌ 失败"}
+                        <br><small>期望: ${
+                          test.expected ? "有效" : "无效"
+                        }, 实际: ${result ? "有效" : "无效"}</small>
                     </div>
                 `;
-                container.appendChild(div);
-            });
-            
-            // 添加小结
-            const summary = document.createElement('div');
-            summary.className = 'test-item';
-            summary.style.background = 'rgba(33, 150, 243, 0.3)';
-            summary.innerHTML = `
+          container.appendChild(div);
+        });
+
+        // 添加小结
+        const summary = document.createElement("div");
+        summary.className = "test-item";
+        summary.style.background = "rgba(33, 150, 243, 0.3)";
+        summary.innerHTML = `
                 <div><strong>${title} 小结</strong></div>
                 <div class="result">${passCount}/${testCases.length} 通过</div>
             `;
-            container.appendChild(summary);
-            
-            return { passed: passCount, total: testCases.length };
-        }
+        container.appendChild(summary);
 
-        function runOuTests() {
-            const ouTests = [
-                { shengmu: 'b', yunmu: 'ou', expected: true, desc: '剥(bou) - 应该有效' },
-                { shengmu: 'p', yunmu: 'ou', expected: true, desc: '剖(pou) - 应该有效' },
-                { shengmu: 'm', yunmu: 'ou', expected: true, desc: '谋(mou) - 应该有效' },
-                { shengmu: 'f', yunmu: 'ou', expected: true, desc: '否(fou) - 应该有效' },
-                { shengmu: 'd', yunmu: 'ou', expected: true, desc: '都(dou) - 应该有效' },
-                { shengmu: 't', yunmu: 'ou', expected: true, desc: '头(tou) - 应该有效' },
-                { shengmu: 'n', yunmu: 'ou', expected: true, desc: '耨(nou) - 应该有效' },
-                { shengmu: 'l', yunmu: 'ou', expected: true, desc: '楼(lou) - 应该有效' },
-                { shengmu: 'g', yunmu: 'ou', expected: true, desc: '狗(gou) - 应该有效' },
-                { shengmu: 'k', yunmu: 'ou', expected: true, desc: '口(kou) - 应该有效' },
-                { shengmu: 'h', yunmu: 'ou', expected: true, desc: '猴(hou) - 应该有效' },
-                { shengmu: 'z', yunmu: 'ou', expected: true, desc: '走(zou) - 应该有效' },
-                { shengmu: 'c', yunmu: 'ou', expected: true, desc: '凑(cou) - 应该有效' },
-                { shengmu: 's', yunmu: 'ou', expected: true, desc: '搜(sou) - 应该有效' },
-                { shengmu: 'zh', yunmu: 'ou', expected: true, desc: '周(zhou) - 应该有效' },
-                { shengmu: 'ch', yunmu: 'ou', expected: true, desc: '抽(chou) - 应该有效' },
-                { shengmu: 'sh', yunmu: 'ou', expected: true, desc: '手(shou) - 应该有效' },
-                { shengmu: 'r', yunmu: 'ou', expected: true, desc: '肉(rou) - 应该有效' },
-                { shengmu: 'y', yunmu: 'ou', expected: true, desc: '优(you) - 应该有效' },
-                { shengmu: 'w', yunmu: 'ou', expected: false, desc: 'wou - 应该无效' }
-            ];
-            
-            return runTest(ouTests, "ou 韵母组合测试");
-        }
+        return { passed: passCount, total: testCases.length };
+      }
 
-        function runCommonTests() {
-            const commonTests = [
-                { shengmu: 'b', yunmu: 'a', expected: true, desc: '八(ba) - 常见组合' },
-                { shengmu: 'm', yunmu: 'a', expected: true, desc: '妈(ma) - 常见组合' },
-                { shengmu: 'd', yunmu: 'a', expected: true, desc: '大(da) - 常见组合' },
-                { shengmu: 't', yunmu: 'a', expected: true, desc: '他(ta) - 常见组合' },
-                { shengmu: 'l', yunmu: 'i', expected: true, desc: '里(li) - 常见组合' },
-                { shengmu: 'n', yunmu: 'i', expected: true, desc: '你(ni) - 常见组合' }
-            ];
-            
-            return runTest(commonTests, "常见拼音组合测试");
-        }
+      function runOuTests() {
+        const ouTests = [
+          {
+            shengmu: "b",
+            yunmu: "ou",
+            expected: true,
+            desc: "剥(bou) - 应该有效",
+          },
+          {
+            shengmu: "p",
+            yunmu: "ou",
+            expected: true,
+            desc: "剖(pou) - 应该有效",
+          },
+          {
+            shengmu: "m",
+            yunmu: "ou",
+            expected: true,
+            desc: "谋(mou) - 应该有效",
+          },
+          {
+            shengmu: "f",
+            yunmu: "ou",
+            expected: true,
+            desc: "否(fou) - 应该有效",
+          },
+          {
+            shengmu: "d",
+            yunmu: "ou",
+            expected: true,
+            desc: "都(dou) - 应该有效",
+          },
+          {
+            shengmu: "t",
+            yunmu: "ou",
+            expected: true,
+            desc: "头(tou) - 应该有效",
+          },
+          {
+            shengmu: "n",
+            yunmu: "ou",
+            expected: true,
+            desc: "耨(nou) - 应该有效",
+          },
+          {
+            shengmu: "l",
+            yunmu: "ou",
+            expected: true,
+            desc: "楼(lou) - 应该有效",
+          },
+          {
+            shengmu: "g",
+            yunmu: "ou",
+            expected: true,
+            desc: "狗(gou) - 应该有效",
+          },
+          {
+            shengmu: "k",
+            yunmu: "ou",
+            expected: true,
+            desc: "口(kou) - 应该有效",
+          },
+          {
+            shengmu: "h",
+            yunmu: "ou",
+            expected: true,
+            desc: "猴(hou) - 应该有效",
+          },
+          {
+            shengmu: "z",
+            yunmu: "ou",
+            expected: true,
+            desc: "走(zou) - 应该有效",
+          },
+          {
+            shengmu: "c",
+            yunmu: "ou",
+            expected: true,
+            desc: "凑(cou) - 应该有效",
+          },
+          {
+            shengmu: "s",
+            yunmu: "ou",
+            expected: true,
+            desc: "搜(sou) - 应该有效",
+          },
+          {
+            shengmu: "zh",
+            yunmu: "ou",
+            expected: true,
+            desc: "周(zhou) - 应该有效",
+          },
+          {
+            shengmu: "ch",
+            yunmu: "ou",
+            expected: true,
+            desc: "抽(chou) - 应该有效",
+          },
+          {
+            shengmu: "sh",
+            yunmu: "ou",
+            expected: true,
+            desc: "手(shou) - 应该有效",
+          },
+          {
+            shengmu: "r",
+            yunmu: "ou",
+            expected: true,
+            desc: "肉(rou) - 应该有效",
+          },
+          {
+            shengmu: "y",
+            yunmu: "ou",
+            expected: true,
+            desc: "优(you) - 应该有效",
+          },
+          {
+            shengmu: "w",
+            yunmu: "ou",
+            expected: false,
+            desc: "wou - 应该无效",
+          },
+        ];
 
-        function runInvalidTests() {
-            const invalidTests = [
-                { shengmu: 'j', yunmu: 'a', expected: false, desc: 'ja - 应该无效' },
-                { shengmu: 'q', yunmu: 'a', expected: false, desc: 'qa - 应该无效' },
-                { shengmu: 'x', yunmu: 'a', expected: false, desc: 'xa - 应该无效' },
-                { shengmu: 'j', yunmu: 'o', expected: false, desc: 'jo - 应该无效' },
-                { shengmu: 'q', yunmu: 'o', expected: false, desc: 'qo - 应该无效' },
-                { shengmu: 'x', yunmu: 'o', expected: false, desc: 'xo - 应该无效' }
-            ];
-            
-            return runTest(invalidTests, "无效拼音组合测试");
-        }
+        return runTest(ouTests, "ou 韵母组合测试");
+      }
 
-        function runAllTests() {
-            const container = document.getElementById('test-results');
-            container.innerHTML = '<h3>🚀 运行全部测试...</h3>';
-            
-            const ouResult = runOuTests();
-            const commonResult = runCommonTests();
-            const invalidResult = runInvalidTests();
-            
-            const totalPassed = ouResult.passed + commonResult.passed + invalidResult.passed;
-            const totalTests = ouResult.total + commonResult.total + invalidResult.total;
-            
-            const finalSummary = document.createElement('div');
-            finalSummary.className = 'summary';
-            finalSummary.innerHTML = `
+      function runCommonTests() {
+        const commonTests = [
+          {
+            shengmu: "b",
+            yunmu: "a",
+            expected: true,
+            desc: "八(ba) - 常见组合",
+          },
+          {
+            shengmu: "m",
+            yunmu: "a",
+            expected: true,
+            desc: "妈(ma) - 常见组合",
+          },
+          {
+            shengmu: "d",
+            yunmu: "a",
+            expected: true,
+            desc: "大(da) - 常见组合",
+          },
+          {
+            shengmu: "t",
+            yunmu: "a",
+            expected: true,
+            desc: "他(ta) - 常见组合",
+          },
+          {
+            shengmu: "l",
+            yunmu: "i",
+            expected: true,
+            desc: "里(li) - 常见组合",
+          },
+          {
+            shengmu: "n",
+            yunmu: "i",
+            expected: true,
+            desc: "你(ni) - 常见组合",
+          },
+        ];
+
+        return runTest(commonTests, "常见拼音组合测试");
+      }
+
+      function runInvalidTests() {
+        const invalidTests = [
+          { shengmu: "j", yunmu: "a", expected: false, desc: "ja - 应该无效" },
+          { shengmu: "q", yunmu: "a", expected: false, desc: "qa - 应该无效" },
+          { shengmu: "x", yunmu: "a", expected: false, desc: "xa - 应该无效" },
+          { shengmu: "j", yunmu: "o", expected: false, desc: "jo - 应该无效" },
+          { shengmu: "q", yunmu: "o", expected: false, desc: "qo - 应该无效" },
+          { shengmu: "x", yunmu: "o", expected: false, desc: "xo - 应该无效" },
+        ];
+
+        return runTest(invalidTests, "无效拼音组合测试");
+      }
+
+      function runAllTests() {
+        const container = document.getElementById("test-results");
+        container.innerHTML = "<h3>🚀 运行全部测试...</h3>";
+
+        const ouResult = runOuTests();
+        const commonResult = runCommonTests();
+        const invalidResult = runInvalidTests();
+
+        const totalPassed =
+          ouResult.passed + commonResult.passed + invalidResult.passed;
+        const totalTests =
+          ouResult.total + commonResult.total + invalidResult.total;
+
+        const finalSummary = document.createElement("div");
+        finalSummary.className = "summary";
+        finalSummary.innerHTML = `
                 <h2>📊 总体测试结果</h2>
                 <p><strong>${totalPassed}/${totalTests}</strong> 测试通过</p>
-                <p>成功率: <strong>${((totalPassed/totalTests)*100).toFixed(1)}%</strong></p>
-                ${totalPassed === totalTests ? 
-                    '<p style="color: #4CAF50;">🎉 所有测试都通过了！</p>' : 
-                    '<p style="color: #ff9800;">⚠️ 部分测试失败，需要检查实现</p>'
+                <p>成功率: <strong>${((totalPassed / totalTests) * 100).toFixed(
+                  1
+                )}%</strong></p>
+                ${
+                  totalPassed === totalTests
+                    ? '<p style="color: #4CAF50;">🎉 所有测试都通过了！</p>'
+                    : '<p style="color: #ff9800;">⚠️ 部分测试失败，需要检查实现</p>'
                 }
             `;
-            container.appendChild(finalSummary);
-        }
+        container.appendChild(finalSummary);
+      }
 
-        // 页面加载后自动运行 ou 测试
-        window.onload = function() {
-            runOuTests();
-        };
+      // 页面加载后自动运行 ou 测试
+      window.onload = function () {
+        runOuTests();
+      };
     </script>
-</body>
+  </body>
 </html>
