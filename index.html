@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>儿童拼音学习小游戏</title>
+    <link rel="stylesheet" href="style.css" />
+    <!-- 引入pinyin.js库用于拼音合法性校验 -->
+    <script src="https://cdn.jsdelivr.net/npm/pinyin@2.11.2/lib/pinyin.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>🎵 拼音学习小游戏 🎵</h1>
+        <p>选择声母、韵母和声调，组合成拼音并听发音！</p>
+      </header>
+
+      <main>
+        <!-- 当前组合显示区 -->
+        <section class="current-combination">
+          <h2>当前拼音组合</h2>
+          <div class="pinyin-display">
+            <span id="current-shengmu" class="pinyin-part shengmu">_</span>
+            <span id="current-yunmu" class="pinyin-part yunmu">_</span>
+            <span id="current-shengdiao" class="pinyin-part shengdiao">_</span>
+          </div>
+          <div class="result-display">
+            <div id="pinyin-result" class="pinyin-result">请选择声母和韵母</div>
+            <button id="play-button" class="play-button" disabled>
+              🔊 播放发音
+            </button>
+          </div>
+          <div id="error-message" class="error-message"></div>
+        </section>
+
+        <!-- 声母选择区 -->
+        <section class="selection-area">
+          <h3>选择声母 (Initials)</h3>
+          <div class="button-grid" id="shengmu-grid">
+            <!-- 声母按钮将通过JavaScript生成 -->
+          </div>
+        </section>
+
+        <!-- 韵母选择区 -->
+        <section class="selection-area">
+          <h3>选择韵母 (Finals)</h3>
+          <div class="button-grid" id="yunmu-grid">
+            <!-- 韵母按钮将通过JavaScript生成 -->
+          </div>
+        </section>
+
+        <!-- 声调选择区 -->
+        <section class="selection-area">
+          <h3>选择声调 (Tones)</h3>
+          <div class="tone-grid" id="shengdiao-grid">
+            <!-- 声调按钮将通过JavaScript生成 -->
+          </div>
+        </section>
+
+        <!-- 练习模式 -->
+        <section class="practice-mode" id="practice-section">
+          <h3>🎯 练习模式</h3>
+          <div class="practice-controls">
+            <div class="difficulty-selector">
+              <label for="difficulty-select">选择难度：</label>
+              <select id="difficulty-select">
+                <option value="beginner">初级</option>
+                <option value="intermediate">中级</option>
+                <option value="advanced">高级</option>
+              </select>
+            </div>
+            <div class="practice-type-selector">
+              <label for="practice-type-select">练习类型：</label>
+              <select id="practice-type-select">
+                <option value="free">自由练习</option>
+                <option value="guided">引导练习</option>
+                <option value="quiz">拼音测验</option>
+              </select>
+            </div>
+            <button id="start-practice" class="practice-button">🚀 开始练习</button>
+            <button id="stop-practice" class="practice-button" style="display: none;">⏹️ 停止练习</button>
+          </div>
+          
+          <!-- 练习状态显示 -->
+          <div class="practice-status" id="practice-status" style="display: none;">
+            <div class="score-display">
+              <span class="score-item">得分: <span id="current-score">0</span></span>
+              <span class="score-item">正确: <span id="correct-count">0</span></span>
+              <span class="score-item">总数: <span id="total-attempts">0</span></span>
+              <span class="score-item">正确率: <span id="accuracy">0%</span></span>
+            </div>
+          </div>
+
+          <!-- 练习目标显示 -->
+          <div class="practice-target" id="practice-target" style="display: none;">
+            <h4>练习目标</h4>
+            <div class="target-display">
+              <div class="target-pinyin" id="target-pinyin">请组合拼音</div>
+              <div class="target-character" id="target-character">？</div>
+            </div>
+            <div class="practice-feedback" id="practice-feedback"></div>
+          </div>
+        </section>
+
+        <!-- 控制按钮 -->
+        <section class="controls">
+          <button id="clear-button" class="control-button">🗑️ 清除选择</button>
+          <button id="random-button" class="control-button">🎲 随机组合</button>
+        </section>
+      </main>
+
+      <footer>
+        <p>💡 提示：有些声母和韵母的组合是不存在的，程序会自动提示哦！</p>
+      </footer>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

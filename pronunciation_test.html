@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>发音测试</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+      .test-section {
+        margin: 20px 0;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        backdrop-filter: blur(10px);
+      }
+      .test-item {
+        margin: 10px 0;
+        padding: 10px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      button {
+        padding: 8px 16px;
+        background: #4caf50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+      }
+      button:hover {
+        background: #45a049;
+      }
+      .result {
+        flex: 1;
+        padding: 8px;
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 4px;
+      }
+      .debug {
+        font-size: 12px;
+        color: #ccc;
+        margin-top: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🔊 拼音发音测试工具</h1>
+
+    <div class="test-section">
+      <h2>基础拼音发音测试</h2>
+      <div id="basic-tests"></div>
+      <button onclick="runBasicTests()">运行基础测试</button>
+    </div>
+
+    <div class="test-section">
+      <h2>声调发音测试</h2>
+      <div id="tone-tests"></div>
+      <button onclick="runToneTests()">运行声调测试</button>
+    </div>
+
+    <div class="test-section">
+      <h2>自定义测试</h2>
+      <input
+        type="text"
+        id="custom-shengmu"
+        placeholder="声母"
+        style="padding: 8px; margin: 5px"
+      />
+      <input
+        type="text"
+        id="custom-yunmu"
+        placeholder="韵母"
+        style="padding: 8px; margin: 5px"
+      />
+      <select id="custom-tone" style="padding: 8px; margin: 5px">
+        <option value="1">一声</option>
+        <option value="2">二声</option>
+        <option value="3">三声</option>
+        <option value="4">四声</option>
+        <option value="0">轻声</option>
+      </select>
+      <button onclick="testCustom()">测试发音</button>
+      <div id="custom-result"></div>
+    </div>
+
+    <script>
+      // 复制主要的发音函数
+      function getCharacterForPronunciation(shengmu, yunmu, tone) {
+        // 简化的汉字映射
+        const pinyinCharacterMap = {
+          ba1: "八",
+          ba2: "拔",
+          ba3: "把",
+          ba4: "爸",
+          ba0: "吧",
+          ma1: "妈",
+          ma2: "麻",
+          ma3: "马",
+          ma4: "骂",
+          ma0: "吗",
+          da1: "搭",
+          da2: "达",
+          da3: "打",
+          da4: "大",
+          da0: "大",
+          ta1: "他",
+          ta2: "踏",
+          ta3: "塔",
+          ta4: "踏",
+          ta0: "他",
+          na1: "拿",
+          na2: "拿",
+          na3: "哪",
+          na4: "那",
+          na0: "哪",
+          la1: "拉",
+          la2: "来",
+          la3: "老",
+          la4: "辣",
+          la0: "啦",
+        };
+
+        const pinyinKey = shengmu + yunmu + (tone || 1);
+        if (pinyinCharacterMap[pinyinKey]) {
+          return pinyinCharacterMap[pinyinKey];
+        }
+
+        const fallbackKey = shengmu + yunmu + "1";
+        if (pinyinCharacterMap[fallbackKey]) {
+          return pinyinCharacterMap[fallbackKey];
+        }
+
+        return findCommonCharacterByPinyin(shengmu + yunmu, tone);
+      }
+
+      function findCommonCharacterByPinyin(pinyinText, tone) {
+        const commonChars = {
+          ba: ["八", "拔", "把", "爸", "吧"],
+          ma: ["妈", "麻", "马", "骂", "吗"],
+          da: ["搭", "达", "打", "大", "大"],
+          ta: ["他", "踏", "塔", "踏", "他"],
+          na: ["拿", "拿", "哪", "那", "哪"],
+          la: ["拉", "来", "老", "辣", "啦"],
+          di: ["滴", "敌", "底", "地", "地"],
+          ti: ["踢", "提", "体", "替", "提"],
+          ni: ["尼", "泥", "你", "逆", "你"],
+          li: ["离", "梨", "里", "力", "里"],
+        };
+
+        if (commonChars[pinyinText] && commonChars[pinyinText].length > 0) {
+          const chars = commonChars[pinyinText];
+          if (tone && tone >= 1 && tone <= 4 && chars[tone - 1]) {
+            return chars[tone - 1];
+          }
+          if (tone === 0 && chars[4]) {
+            return chars[4];
+          }
+          return chars[0];
+        }
+        return null;
+      }
+
+      function playPronunciation(character, debug = false) {
+        if (!character) {
+          alert("没有找到对应的发音");
+          return;
+        }
+
+        if ("speechSynthesis" in window) {
+          speechSynthesis.cancel();
+
+          const utterance = new SpeechSynthesisUtterance();
+          utterance.text = character;
+          utterance.lang = "zh-CN";
+          utterance.rate = 0.6;
+          utterance.pitch = 1.0;
+          utterance.volume = 1.0;
+
+          function selectVoiceAndSpeak() {
+            const voices = speechSynthesis.getVoices();
+            const chineseVoices = voices.filter(
+              (voice) =>
+                voice.lang.includes("zh") ||
+                voice.lang.includes("CN") ||
+                voice.name.includes("Chinese") ||
+                voice.name.includes("中文") ||
+                voice.name.includes("Mandarin")
+            );
+
+            if (chineseVoices.length > 0) {
+              utterance.voice = chineseVoices[0];
+              if (debug) console.log("选择语音:", utterance.voice.name);
+            }
+
+            utterance.onstart = () => {
+              if (debug) console.log("开始播放:", character);
+            };
+
+            utterance.onerror = (event) => {
+              console.error("语音播放错误:", event);
+              alert("语音播放失败");
+            };
+
+            speechSynthesis.speak(utterance);
+          }
+
+          if (speechSynthesis.getVoices().length === 0) {
+            speechSynthesis.onvoiceschanged = selectVoiceAndSpeak;
+          } else {
+            selectVoiceAndSpeak();
+          }
+        } else {
+          alert("您的浏览器不支持语音播放功能");
+        }
+      }
+
+      function runBasicTests() {
+        const basicTests = [
+          ["b", "a"],
+          ["p", "a"],
+          ["m", "a"],
+          ["d", "a"],
+          ["t", "a"],
+          ["n", "a"],
+          ["l", "a"],
+          ["d", "i"],
+          ["t", "i"],
+          ["n", "i"],
+          ["l", "i"],
+        ];
+
+        const container = document.getElementById("basic-tests");
+        container.innerHTML = "";
+
+        basicTests.forEach(([shengmu, yunmu]) => {
+          const character = getCharacterForPronunciation(shengmu, yunmu, 1);
+          const div = document.createElement("div");
+          div.className = "test-item";
+          div.innerHTML = `
+                    <button onclick="playPronunciation('${character}', true)">🔊</button>
+                    <div class="result">
+                        <strong>${shengmu} + ${yunmu}</strong> → ${
+            character || "无发音"
+          }
+                        <div class="debug">拼音: ${shengmu}${yunmu}</div>
+                    </div>
+                `;
+          container.appendChild(div);
+        });
+      }
+
+      function runToneTests() {
+        const toneTests = [
+          ["m", "a", 1],
+          ["m", "a", 2],
+          ["m", "a", 3],
+          ["m", "a", 4],
+          ["d", "a", 1],
+          ["d", "a", 2],
+          ["d", "a", 3],
+          ["d", "a", 4],
+        ];
+
+        const container = document.getElementById("tone-tests");
+        container.innerHTML = "";
+
+        toneTests.forEach(([shengmu, yunmu, tone]) => {
+          const character = getCharacterForPronunciation(shengmu, yunmu, tone);
+          const toneNames = {
+            1: "一声",
+            2: "二声",
+            3: "三声",
+            4: "四声",
+            0: "轻声",
+          };
+          const div = document.createElement("div");
+          div.className = "test-item";
+          div.innerHTML = `
+                    <button onclick="playPronunciation('${character}', true)">🔊</button>
+                    <div class="result">
+                        <strong>${shengmu} + ${yunmu} (${
+            toneNames[tone]
+          })</strong> → ${character || "无发音"}
+                        <div class="debug">声调: 第${tone}声</div>
+                    </div>
+                `;
+          container.appendChild(div);
+        });
+      }
+
+      function testCustom() {
+        const shengmu = document.getElementById("custom-shengmu").value.trim();
+        const yunmu = document.getElementById("custom-yunmu").value.trim();
+        const tone = parseInt(document.getElementById("custom-tone").value);
+
+        if (!shengmu || !yunmu) {
+          alert("请输入声母和韵母");
+          return;
+        }
+
+        const character = getCharacterForPronunciation(shengmu, yunmu, tone);
+        const toneNames = {
+          1: "一声",
+          2: "二声",
+          3: "三声",
+          4: "四声",
+          0: "轻声",
+        };
+
+        const container = document.getElementById("custom-result");
+        container.innerHTML = `
+                <div class="test-item">
+                    <button onclick="playPronunciation('${character}', true)">🔊</button>
+                    <div class="result">
+                        <strong>${shengmu} + ${yunmu} (${
+          toneNames[tone]
+        })</strong> → ${character || "无发音"}
+                        <div class="debug">完整拼音: ${shengmu}${yunmu}${tone}</div>
+                    </div>
+                </div>
+            `;
+
+        if (character) {
+          playPronunciation(character, true);
+        }
+      }
+
+      // 页面加载完成后运行基础测试
+      window.onload = function () {
+        runBasicTests();
+      };
+    </script>
+  </body>
+</html>

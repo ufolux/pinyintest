@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>拼音校验测试</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      .test-section {
+        margin: 20px 0;
+        padding: 15px;
+        border: 1px solid #ccc;
+      }
+      .result {
+        margin: 10px 0;
+        padding: 8px;
+        border-radius: 4px;
+      }
+      .valid {
+        background-color: #d4edda;
+        color: #155724;
+      }
+      .invalid {
+        background-color: #f8d7da;
+        color: #721c24;
+      }
+      .no-sound {
+        background-color: #fff3cd;
+        color: #856404;
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/pinyin@2.11.2/lib/pinyin.js"></script>
+  </head>
+  <body>
+    <h1>拼音校验和发音测试</h1>
+
+    <div class="test-section">
+      <h2>拼音组合校验测试</h2>
+      <button onclick="testPinyinValidation()">运行拼音校验测试</button>
+      <div id="validation-results"></div>
+    </div>
+
+    <div class="test-section">
+      <h2>发音查找测试</h2>
+      <button onclick="testPronunciation()">运行发音测试</button>
+      <div id="pronunciation-results"></div>
+    </div>
+
+    <script>
+      // 导入脚本中的关键函数（简化版）
+      const testCombinations = [
+        // 有效组合
+        ["b", "a"],
+        ["p", "a"],
+        ["m", "a"],
+        ["f", "a"],
+        ["d", "a"],
+        ["t", "a"],
+        ["n", "a"],
+        ["l", "a"],
+        ["g", "a"],
+        ["k", "a"],
+        ["h", "a"],
+        ["j", "i"],
+        ["q", "i"],
+        ["x", "i"],
+        ["zh", "a"],
+        ["ch", "a"],
+        ["sh", "a"],
+        ["r", "a"],
+        ["z", "a"],
+        ["c", "a"],
+        ["s", "a"],
+
+        // 无效组合
+        ["j", "a"],
+        ["j", "o"],
+        ["j", "u"],
+        ["q", "a"],
+        ["q", "o"],
+        ["q", "u"],
+        ["x", "a"],
+        ["x", "o"],
+        ["x", "u"],
+        ["zh", "i"],
+        ["ch", "i"],
+        ["sh", "i"],
+        ["b", "ü"],
+        ["p", "ü"],
+        ["m", "ü"],
+      ];
+
+      function testPinyinValidation() {
+        const resultsDiv = document.getElementById("validation-results");
+        resultsDiv.innerHTML = "<h3>拼音校验结果：</h3>";
+
+        testCombinations.forEach(([shengmu, yunmu]) => {
+          const pinyin = shengmu + yunmu;
+          const isValid = isKnownValidPinyin(pinyin);
+          const resultClass = isValid ? "valid" : "invalid";
+          const resultText = isValid ? "有效" : "无效";
+
+          resultsDiv.innerHTML += `
+                    <div class="result ${resultClass}">
+                        ${shengmu} + ${yunmu} = ${pinyin} - ${resultText}
+                    </div>
+                `;
+        });
+      }
+
+      function testPronunciation() {
+        const resultsDiv = document.getElementById("pronunciation-results");
+        resultsDiv.innerHTML = "<h3>发音查找结果：</h3>";
+
+        const pronunciationTests = [
+          ["b", "a", 1],
+          ["p", "a", 2],
+          ["m", "a", 3],
+          ["f", "a", 4],
+          ["d", "i", 1],
+          ["t", "i", 2],
+          ["n", "i", 3],
+          ["l", "i", 4],
+          ["x", "x", 1], // 无效组合测试
+          ["j", "j", 1], // 无效组合测试
+        ];
+
+        pronunciationTests.forEach(([shengmu, yunmu, tone]) => {
+          const character = getCharacterForPronunciation(shengmu, yunmu, tone);
+          let resultClass, resultText;
+
+          if (character) {
+            resultClass = "valid";
+            resultText = `找到汉字: ${character}`;
+          } else {
+            resultClass = "no-sound";
+            resultText = "没有对应的发音";
+          }
+
+          resultsDiv.innerHTML += `
+                    <div class="result ${resultClass}">
+                        ${shengmu} + ${yunmu} (第${tone}声) - ${resultText}
+                    </div>
+                `;
+        });
+      }
+
+      // 简化的校验函数
+      function isKnownValidPinyin(pinyin) {
+        const validPinyinList = [
+          "ba",
+          "pa",
+          "ma",
+          "fa",
+          "da",
+          "ta",
+          "na",
+          "la",
+          "ga",
+          "ka",
+          "ha",
+          "za",
+          "ca",
+          "sa",
+          "zha",
+          "cha",
+          "sha",
+          "ra",
+          "bi",
+          "pi",
+          "mi",
+          "di",
+          "ti",
+          "ni",
+          "li",
+          "ji",
+          "qi",
+          "xi",
+          "yi",
+          "zhi",
+          "chi",
+          "shi",
+          "ri",
+          "zi",
+          "ci",
+          "si",
+        ];
+        return validPinyinList.includes(pinyin);
+      }
+
+      // 简化的发音查找函数
+      function getCharacterForPronunciation(shengmu, yunmu, tone) {
+        const commonCharactersByPinyin = {
+          ba: ["八", "拔", "把", "爸"],
+          pa: ["趴", "爬", "拍", "怕"],
+          ma: ["妈", "麻", "马", "骂"],
+          fa: ["发", "罚", "法", "乏"],
+          da: ["大", "达", "打", "答"],
+          ta: ["他", "塔", "塌", "踏"],
+          na: ["拿", "那", "哪", "纳"],
+          la: ["拉", "辣", "啦", "蜡"],
+        };
+
+        const pinyinText = shengmu + yunmu;
+        if (
+          commonCharactersByPinyin[pinyinText] &&
+          commonCharactersByPinyin[pinyinText].length > 0
+        ) {
+          const chars = commonCharactersByPinyin[pinyinText];
+          if (tone && tone >= 1 && tone <= 4 && chars[tone - 1]) {
+            return chars[tone - 1];
+          }
+          return chars[0];
+        }
+        return null;
+      }
+    </script>
+  </body>
+</html>

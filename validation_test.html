@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>拼音校验快速测试</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .test-item {
+            margin: 10px 0;
+            padding: 15px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .valid { background: rgba(76, 175, 80, 0.3); }
+        .invalid { background: rgba(244, 67, 54, 0.3); }
+        .result { font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>🔍 拼音校验快速测试</h1>
+    <div id="test-results"></div>
+
+    <script>
+        // 复制主要的校验函数（简化版）
+        const pinyinRules = {
+            invalidCombinations: [
+                ["j", "a"], ["j", "o"], ["j", "u"],
+                ["q", "a"], ["q", "o"], ["q", "u"],
+                ["x", "a"], ["x", "o"], ["x", "u"],
+                // ...其他无效组合
+            ]
+        };
+
+        function isKnownValidPinyin(pinyin) {
+            const validPinyinList = [
+                "ba", "pa", "ma", "fa", "da", "ta", "na", "la", "ga", "ka", "ha",
+                "bou", "pou", "mou", "fou", "dou", "tou", "nou", "lou", "gou", "kou", "hou",
+                "zou", "cou", "sou", "zhou", "chou", "shou", "rou",
+                // ...其他有效拼音
+            ];
+            return validPinyinList.includes(pinyin);
+        }
+
+        function findCommonCharacterByPinyin(pinyinText, tone) {
+            const commonChars = {
+                bou: ["剥", "剥", "剥", "剥", "剥"],
+                pou: ["剖", "剖", "剖", "剖", "剖"],
+                mou: ["谋", "谋", "某", "谋", "谋"],
+                fou: ["否", "否", "否", "否", "否"],
+                dou: ["兜", "都", "斗", "豆", "都"],
+                tou: ["偷", "头", "投", "透", "头"],
+                lou: ["搂", "楼", "搂", "漏", "楼"],
+                gou: ["沟", "狗", "够", "构", "狗"],
+                kou: ["抠", "口", "口", "扣", "口"],
+                hou: ["侯", "猴", "吼", "后", "猴"],
+                // ...更多
+            };
+            
+            if (commonChars[pinyinText] && commonChars[pinyinText].length > 0) {
+                const chars = commonChars[pinyinText];
+                if (tone && tone >= 1 && tone <= 4 && chars[tone - 1]) {
+                    return chars[tone - 1];
+                }
+                return chars[0];
+            }
+            return null;
+        }
+
+        function isValidCombination(shengmu, yunmu) {
+            // 检查无效组合
+            const isInvalid = pinyinRules.invalidCombinations.some(
+                combo => combo[0] === shengmu && combo[1] === yunmu
+            );
+            
+            if (isInvalid) return false;
+            
+            const pinyinToCheck = shengmu + yunmu;
+            
+            // 检查已知有效拼音
+            if (isKnownValidPinyin(pinyinToCheck)) return true;
+            
+            // 检查常用汉字库
+            const hasCommonCharacter = findCommonCharacterByPinyin(pinyinToCheck);
+            return !!hasCommonCharacter;
+        }
+
+        // 测试用例
+        const testCases = [
+            { shengmu: 'b', yunmu: 'ou', expected: true, desc: '剥(bou) - 应该有效' },
+            { shengmu: 'p', yunmu: 'ou', expected: true, desc: '剖(pou) - 应该有效' },
+            { shengmu: 'm', yunmu: 'ou', expected: true, desc: '谋(mou) - 应该有效' },
+            { shengmu: 'd', yunmu: 'ou', expected: true, desc: '都(dou) - 应该有效' },
+            { shengmu: 't', yunmu: 'ou', expected: true, desc: '头(tou) - 应该有效' },
+            { shengmu: 'l', yunmu: 'ou', expected: true, desc: '楼(lou) - 应该有效' },
+            { shengmu: 'g', yunmu: 'ou', expected: true, desc: '狗(gou) - 应该有效' },
+            { shengmu: 'k', yunmu: 'ou', expected: true, desc: '口(kou) - 应该有效' },
+            { shengmu: 'h', yunmu: 'ou', expected: true, desc: '猴(hou) - 应该有效' },
+            { shengmu: 'j', yunmu: 'a', expected: false, desc: 'ja - 应该无效' },
+            { shengmu: 'q', yunmu: 'a', expected: false, desc: 'qa - 应该无效' },
+            { shengmu: 'x', yunmu: 'a', expected: false, desc: 'xa - 应该无效' },
+        ];
+
+        function runTests() {
+            const container = document.getElementById('test-results');
+            let passCount = 0;
+            
+            testCases.forEach(test => {
+                const result = isValidCombination(test.shengmu, test.yunmu);
+                const passed = result === test.expected;
+                if (passed) passCount++;
+                
+                const div = document.createElement('div');
+                div.className = `test-item ${passed ? 'valid' : 'invalid'}`;
+                div.innerHTML = `
+                    <div>
+                        <strong>${test.shengmu} + ${test.yunmu}</strong>
+                        <br><small>${test.desc}</small>
+                    </div>
+                    <div class="result">
+                        ${passed ? '✅ 通过' : '❌ 失败'} 
+                        <br><small>期望: ${test.expected}, 实际: ${result}</small>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+            
+            // 添加总结
+            const summary = document.createElement('div');
+            summary.className = 'test-item';
+            summary.style.marginTop = '20px';
+            summary.style.fontSize = '18px';
+            summary.innerHTML = `
+                <div><strong>测试总结</strong></div>
+                <div class="result">${passCount}/${testCases.length} 通过</div>
+            `;
+            container.appendChild(summary);
+        }
+
+        // 页面加载完成后运行测试
+        window.onload = runTests;
+    </script>
+</body>
+</html>
