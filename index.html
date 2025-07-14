@@ -31,6 +31,11 @@
           </div>
           <div id="error-message" class="error-message"></div>
 
+          <!-- 字符信息显示区 -->
+          <div id="character-info" class="character-info">
+            <p class="info-placeholder">请选择声母和韵母查看对应汉字</p>
+          </div>
+
           <!-- 控制按钮移到这里 -->
           <div class="controls">
             <button id="clear-button" class="control-button">🗑️ 清除</button>
@@ -64,7 +69,10 @@
       </main>
 
       <footer>
-        <p>💡 提示：有些声母和韵母的组合是不存在的，程序会自动提示哦！</p>
+        <p>
+          💡
+          提示：有些声母和韵母的组合是不存在的，程序会自动提示哦！部分韵母（如a、e、o等）可以单独发音（零声母）。
+        </p>
       </footer>
     </div>
 
@@ -72,11 +80,11 @@
     <script src="js/validPinyin.js"></script>
     <script src="js/pinyinValidation.js"></script>
     <script src="js/pinyinData.js"></script>
+    <script src="js/utils.js"></script>
     <script src="js/toneUtils.js"></script>
     <script src="js/uiComponents.js"></script>
     <script src="js/pronunciation.js"></script>
     <script src="js/appState.js"></script>
-    <script src="js/utils.js"></script>
     <script src="js/main.js"></script>
   </body>
 </html>

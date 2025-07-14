@@ -76,28 +76,44 @@ function selectShengdiao(tone, button) {
 function updatePinyinResult() {
   clearError();
 
-  if (!currentSelection.shengmu || !currentSelection.yunmu) {
-    elements.pinyinResult.textContent = "请选择声母和韵母";
+  // 检查是否至少选择了韵母
+  if (!currentSelection.yunmu) {
+    elements.pinyinResult.textContent = "请选择韵母";
     elements.playButton.disabled = true;
+
+    // 更新字符显示
+    if (typeof updateCharacterDisplay === "function") {
+      updateCharacterDisplay();
+    }
     return;
   }
 
-  // 检查拼音组合是否合法
-  if (!isValidCombination(currentSelection.shengmu, currentSelection.yunmu)) {
-    showError(
-      `声母"${currentSelection.shengmu}"和韵母"${currentSelection.yunmu}"不能组合！`
-    );
+  // 确定声母（可能为空，表示零声母）
+  const shengmu = currentSelection.shengmu || "";
+  const yunmu = currentSelection.yunmu;
+
+  // 检查拼音组合是否合法（包括零声母组合）
+  if (!isValidCombination(shengmu, yunmu)) {
+    const combinationText = shengmu
+      ? `声母"${shengmu}"和韵母"${yunmu}"`
+      : `韵母"${yunmu}"`;
+    showError(`${combinationText}不能组合！`);
     elements.pinyinResult.textContent = "❌ 无效组合";
     elements.playButton.disabled = true;
 
     // 添加震动效果
     elements.pinyinResult.classList.add("shake");
     setTimeout(() => elements.pinyinResult.classList.remove("shake"), 500);
+
+    // 更新字符显示
+    if (typeof updateCharacterDisplay === "function") {
+      updateCharacterDisplay();
+    }
     return;
   }
 
   // 生成完整的拼音
-  let fullPinyin = currentSelection.shengmu + currentSelection.yunmu;
+  let fullPinyin = shengmu + yunmu;
 
   // 添加声调标记
   if (currentSelection.shengdiao) {
@@ -110,6 +126,11 @@ function updatePinyinResult() {
   // 添加成功效果
   elements.pinyinResult.classList.add("bounce");
   setTimeout(() => elements.pinyinResult.classList.remove("bounce"), 1000);
+
+  // 更新字符显示
+  if (typeof updateCharacterDisplay === "function") {
+    updateCharacterDisplay();
+  }
 }
 
 // 清除选择
@@ -124,7 +145,7 @@ function clearSelection() {
   elements.currentShengmu.textContent = "_";
   elements.currentYunmu.textContent = "_";
   elements.currentShengdiao.textContent = "_";
-  elements.pinyinResult.textContent = "请选择声母和韵母";
+  elements.pinyinResult.textContent = "请选择韵母开始学习";
   elements.playButton.disabled = true;
 
   // 清除选中状态
@@ -135,12 +156,21 @@ function clearSelection() {
   });
 
   clearError();
+
+  // 清除字符显示
+  if (typeof updateCharacterDisplay === "function") {
+    updateCharacterDisplay();
+  }
 }
 
 // 生成随机组合
 function generateRandomCombination() {
-  let availableShengmu = pinyinData.shengmu;
-  let availableYunmu = pinyinData.yunmu;
+  // 使用有字符数据支持的有效声母和韵母
+  let availableShengmu = getValidShengmuFromCharacterData();
+  let availableYunmu = getValidYunmuFromCharacterData();
+
+  // 添加空声母选项（零声母）以支持零声母韵母
+  availableShengmu.push("");
 
   let attempts = 0;
   const maxAttempts = 100;
@@ -151,7 +181,8 @@ function generateRandomCombination() {
     const randomYunmu =
       availableYunmu[Math.floor(Math.random() * availableYunmu.length)];
 
-    if (isValidCombination(randomShengmu, randomYunmu)) {
+    // 检查是否有对应的汉字
+    if (hasCharacterForCombination(randomShengmu, randomYunmu)) {
       // 找到对应的按钮
       const shengmuButtons = document.querySelectorAll(".shengmu-button");
       const yunmuButtons = document.querySelectorAll(".yunmu-button");
@@ -159,11 +190,13 @@ function generateRandomCombination() {
       let shengmuButton = null;
       let yunmuButton = null;
 
-      // 查找声母按钮
-      for (let btn of shengmuButtons) {
-        if (btn.textContent === randomShengmu) {
-          shengmuButton = btn;
-          break;
+      // 查找声母按钮（如果不是零声母）
+      if (randomShengmu) {
+        for (let btn of shengmuButtons) {
+          if (btn.textContent === randomShengmu) {
+            shengmuButton = btn;
+            break;
+          }
         }
       }
 

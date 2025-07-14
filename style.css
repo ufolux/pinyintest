@@ -372,6 +372,119 @@ footer p {
   animation: shake 0.5s;
 }
 
+/* 字符信息显示区样式 */
+.character-info {
+  margin-top: 15px;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.character-info .info-placeholder {
+  color: #718096;
+  font-style: italic;
+  text-align: center;
+  margin: 0;
+}
+
+.character-info .error-message {
+  color: #e53e3e;
+  text-align: center;
+  margin: 0;
+}
+
+.character-info .warning-message {
+  color: #d69e2e;
+  text-align: center;
+  margin: 0;
+}
+
+.character-display h4 {
+  color: #4a5568;
+  margin-bottom: 10px;
+  font-size: 1em;
+  text-align: center;
+}
+
+.character-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 8px;
+}
+
+.character-item {
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.character-item:hover {
+  background: #f0f9ff;
+  border-color: #3182ce;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.character-item.selected-tone {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border-color: #667eea;
+}
+
+.character-item.playing {
+  animation: pulse 1s ease-in-out;
+  background: #48bb78;
+  color: white;
+  border-color: #38a169;
+}
+
+.character-char {
+  font-size: 1.5em;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.character-pinyin {
+  font-size: 0.85em;
+  color: #4a5568;
+  margin-bottom: 2px;
+}
+
+.character-item.selected-tone .character-pinyin,
+.character-item.playing .character-pinyin {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.character-tone {
+  font-size: 0.75em;
+  color: #718096;
+}
+
+.character-item.selected-tone .character-tone,
+.character-item.playing .character-tone {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
 /* 响应式设计 */
 @media (max-width: 1024px) {
   .main-grid {
@@ -450,5 +563,30 @@ footer p {
     height: 35px;
     line-height: 35px;
     font-size: 1.2em;
+  }
+
+  .character-info {
+    max-height: 150px;
+  }
+
+  .character-grid {
+    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    gap: 6px;
+  }
+
+  .character-item {
+    padding: 6px;
+  }
+
+  .character-char {
+    font-size: 1.3em;
+  }
+
+  .character-pinyin {
+    font-size: 0.8em;
+  }
+
+  .character-tone {
+    font-size: 0.7em;
   }
 }

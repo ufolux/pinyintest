@@ -287,3 +287,84 @@ function initializeEnhancedValidation() {
   }
   console.log(`Total pinyin variations (with tones): ${totalVariations}`);
 }
+
+// 从validPinyin对象获取所有可用字符
+function getAllAvailableCharacters() {
+  const characters = new Set();
+
+  if (validPinyin) {
+    for (const [basePinyin, variations] of Object.entries(validPinyin)) {
+      for (const variation of variations) {
+        if (variation.char && variation.char !== basePinyin) {
+          characters.add(variation.char);
+        }
+      }
+    }
+  }
+
+  return Array.from(characters);
+}
+
+// 根据汉字查找对应的拼音信息
+function getPinyinByCharacter(character) {
+  if (!validPinyin || !character) return null;
+
+  for (const [basePinyin, variations] of Object.entries(validPinyin)) {
+    for (const variation of variations) {
+      if (variation.char === character) {
+        return {
+          basePinyin: basePinyin,
+          pinyin: variation.pinyin,
+          char: variation.char,
+        };
+      }
+    }
+  }
+
+  return null;
+}
+
+// 验证拼音组合并返回可用字符
+function validatePinyinAndGetCharacters(shengmu, yunmu) {
+  const basePinyin = shengmu ?? "" + yunmu ?? "";
+
+  // 首先检查拼音组合是否有效
+  const isValid = isValidCombination(shengmu, yunmu);
+  if (!isValid) {
+    return { valid: false, characters: [] };
+  }
+
+  // 获取对应的字符
+  const characters = [];
+  if (validPinyin && validPinyin[basePinyin]) {
+    for (const variation of validPinyin[basePinyin]) {
+      if (variation.char && variation.char !== basePinyin) {
+        characters.push({
+          char: variation.char,
+          pinyin: variation.pinyin,
+          tone: getToneFromPinyin(variation.pinyin),
+        });
+      }
+    }
+  }
+
+  return { valid: true, characters: characters };
+}
+
+// 从带声调的拼音中提取声调数字
+function getToneFromPinyin(pinyin) {
+  if (!pinyin) return 0;
+
+  // 检查声调标记
+  const tone1 = /[āēīōūǖ]/;
+  const tone2 = /[áéíóúǘ]/;
+  const tone3 = /[ǎěǐǒǔǚ]/;
+  const tone4 = /[àèìòùǜ]/;
+
+  if (tone1.test(pinyin)) return 1;
+  if (tone2.test(pinyin)) return 2;
+  if (tone3.test(pinyin)) return 3;
+  if (tone4.test(pinyin)) return 4;
+
+  return 0; // 轻声或无声调
+}
