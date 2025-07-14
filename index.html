@@ -15,7 +15,7 @@
       </header>
 
       <main class="main-grid">
-        <!-- 左侧：当前组合显示区 -->
+        <!-- 左上：当前组合显示区 -->
         <section class="current-combination">
           <h2>当前拼音组合</h2>
           <div class="pinyin-display">
@@ -38,15 +38,7 @@
           </div>
         </section>
 
-        <!-- 右侧上：声母选择区 -->
-        <section class="selection-area shengmu-area">
-          <h3>声母</h3>
-          <div class="button-grid" id="shengmu-grid">
-            <!-- 声母按钮将通过JavaScript生成 -->
-          </div>
-        </section>
-
-        <!-- 右侧中：韵母选择区 -->
+        <!-- 左下：韵母选择区 -->
         <section class="selection-area yunmu-area">
           <h3>韵母</h3>
           <div class="button-grid" id="yunmu-grid">
@@ -54,7 +46,15 @@
           </div>
         </section>
 
-        <!-- 右侧下：声调选择区 -->
+        <!-- 右上：声母选择区 -->
+        <section class="selection-area shengmu-area">
+          <h3>声母</h3>
+          <div class="button-grid" id="shengmu-grid">
+            <!-- 声母按钮将通过JavaScript生成 -->
+          </div>
+        </section>
+
+        <!-- 右下：声调选择区 -->
         <section class="selection-area shengdiao-area">
           <h3>声调</h3>
           <div class="tone-grid" id="shengdiao-grid">
