@@ -1,0 +1,1231 @@
+// 完整的拼音组合验证表 - 基于标准拼音规则
+const PINYIN_VALIDATION_TABLE = (() => {
+  const master = [
+    "",
+    "b",
+    "p",
+    "m",
+    "f",
+    "d",
+    "t",
+    "n",
+    "l",
+    "g",
+    "k",
+    "h",
+    "j",
+    "q",
+    "x",
+    "z",
+    "c",
+    "s",
+    "zh",
+    "ch",
+    "sh",
+    "r",
+    "y",
+    "w",
+  ];
+  const slave = [
+    "a",
+    "o",
+    "e",
+    "i",
+    "u",
+    "ü",
+    "ai",
+    "ao",
+    "an",
+    "ang",
+    "ou",
+    "ong",
+    "ei",
+    "er",
+    "en",
+    "eng",
+    "iu",
+    "ie",
+    "in",
+    "ing",
+    "ia",
+    "iao",
+    "ian",
+    "iang",
+    "iong",
+    "ui",
+    "un",
+    "ua",
+    "uai",
+    "uan",
+    "uang",
+    "uo",
+    "üe",
+  ];
+
+  const table = [
+    "111111111111000111111011", // a
+    "111110000000000000000011", // o
+    "100101111111000111111110", // e
+    "011101111000111111111110", // i
+    "011111111111000111111101", // u
+    "000000000000111000000010", // ü
+    "111101111111000111111001", // ai
+    "111101111111000111111110", // ao
+    "111111111111000111111111", // an
+    "111111111111000111111111", // ang
+    "111111111111000111111111", // ou
+    "101111111111000111111110", // ong
+    "000001111111000111110110", // ei
+    "111111111111000110101001", // er
+    "100000000000000000000000", // en
+    "111111010111000111111101", // eng
+    "111111111111000111111101", // iu
+    "000101011000111000000000", // ie
+    "011101111000111000000000", // in
+    "011100011000111000000010", // ing
+    "011101111000111000000010", // ia
+    "000001001000111000000000", // iao
+    "011101111000111000000000", // ian
+    "011101111000111000000000", // iang
+    "000000011000111000000000", // iong
+    "000000000000111000000000", // ui
+    "000001100111000111111100", // un
+    "000001111111111111111100", // ua
+    "000000000111000000111100", // uai
+    "000000000111000000111000", // uan
+    "000001111111111111111110", // uang
+    "000000000111000000111000", // uo
+    "000001111111000111111100", // üe
+  ];
+
+  const validCombinations = new Set();
+
+  for (let i = 0; i < slave.length; i++) {
+    for (let j = 0; j < master.length; j++) {
+      if (table[i][j] === "1") {
+        const combination = master[j] + slave[i];
+        validCombinations.add(combination);
+      }
+    }
+  }
+
+  return validCombinations;
+})();
+
+// 拼音组合验证函数 - 使用完整验证表
+function isValidCombination(shengmu, yunmu) {
+  // 处理空声母的情况
+  const shengmuToCheck = shengmu || "";
+  const combination = shengmuToCheck + yunmu;
+
+  return PINYIN_VALIDATION_TABLE.has(combination);
+}
+
+// 拼音数据
+const pinyinData = {
+  // 声母 (不包括零声母)
+  shengmu: [
+    "b",
+    "p",
+    "m",
+    "f",
+    "d",
+    "t",
+    "n",
+    "l",
+    "g",
+    "k",
+    "h",
+    "j",
+    "q",
+    "x",
+    "zh",
+    "ch",
+    "sh",
+    "r",
+    "z",
+    "c",
+    "s",
+  ],
+
+  // 韵母 (按照拼音验证表的顺序)
+  yunmu: [
+    "a",
+    "o",
+    "e",
+    "i",
+    "u",
+    "ü",
+    "ai",
+    "ao",
+    "an",
+    "ang",
+    "ou",
+    "ong",
+    "ei",
+    "er",
+    "en",
+    "eng",
+    "iu",
+    "ie",
+    "in",
+    "ing",
+    "ia",
+    "iao",
+    "ian",
+    "iang",
+    "iong",
+    "ui",
+    "un",
+    "ua",
+    "uai",
+    "uan",
+    "uang",
+    "uo",
+    "üe",
+  ],
+
+  // 声调
+  shengdiao: [
+    { tone: 1, name: "一声", symbol: "ˉ" },
+    { tone: 2, name: "二声", symbol: "ˊ" },
+    { tone: 3, name: "三声", symbol: "ˇ" },
+    { tone: 4, name: "四声", symbol: "ˋ" },
+    { tone: 0, name: "轻声", symbol: "" },
+  ],
+};
+
+// 拼音规则 - 定义哪些声母和韵母可以组合
+const pinyinRules = {
+  // 真正不能组合的声母和韵母（基于标准汉语拼音规则）
+  invalidCombinations: [
+    // j, q, x 只能与 i, ü 开头的韵母组合，不能与其他韵母组合
+    ["j", "a"],
+    ["j", "o"],
+    ["j", "u"],
+    ["j", "ai"],
+    ["j", "ao"],
+    ["j", "ou"],
+    ["j", "an"],
+    ["j", "un"],
+    ["j", "ang"],
+    ["j", "ong"],
+    ["q", "a"],
+    ["q", "o"],
+    ["q", "u"],
+    ["q", "ai"],
+    ["q", "ao"],
+    ["q", "ou"],
+    ["q", "an"],
+    ["q", "un"],
+    ["q", "ang"],
+    ["q", "ong"],
+    ["x", "a"],
+    ["x", "o"],
+    ["x", "u"],
+    ["x", "ai"],
+    ["x", "ao"],
+    ["x", "ou"],
+    ["x", "an"],
+    ["x", "un"],
+    ["x", "ang"],
+    ["x", "ong"],
+
+    // zh, ch, sh, r 不能与 i, ü 开头的韵母组合
+    ["zh", "i"],
+    ["zh", "ü"],
+    ["zh", "ie"],
+    ["zh", "üe"],
+    ["zh", "in"],
+    ["zh", "ün"],
+    ["ch", "i"],
+    ["ch", "ü"],
+    ["ch", "ie"],
+    ["ch", "üe"],
+    ["ch", "in"],
+    ["ch", "ün"],
+    ["sh", "i"],
+    ["sh", "ü"],
+    ["sh", "ie"],
+    ["sh", "üe"],
+    ["sh", "in"],
+    ["sh", "ün"],
+    ["r", "i"],
+    ["r", "ü"],
+    ["r", "ie"],
+    ["r", "üe"],
+    ["r", "in"],
+    ["r", "ün"],
+
+    // z, c, s 不能与 ü 开头的韵母组合
+    ["z", "ü"],
+    ["z", "üe"],
+    ["z", "ün"],
+    ["c", "ü"],
+    ["c", "üe"],
+    ["c", "ün"],
+    ["s", "ü"],
+    ["s", "üe"],
+    ["s", "ün"],
+
+    // b, p, m, f 不能与 ü 开头的韵母组合
+    ["b", "ü"],
+    ["b", "üe"],
+    ["b", "ün"],
+    ["p", "ü"],
+    ["p", "üe"],
+    ["p", "ün"],
+    ["m", "ü"],
+    ["m", "üe"],
+    ["m", "ün"],
+    ["f", "ü"],
+    ["f", "üe"],
+    ["f", "ün"],
+
+    // d, t, n, l 不能与 ü 开头的韵母组合
+    ["d", "ü"],
+    ["d", "üe"],
+    ["d", "ün"],
+    ["t", "ü"],
+    ["t", "üe"],
+    ["t", "ün"],
+    ["n", "ü"],
+    ["n", "üe"],
+    ["n", "ün"],
+    ["l", "ü"],
+    ["l", "üe"],
+    ["l", "ün"],
+
+    // g, k, h 不能与 i, ü 开头的韵母组合
+    ["g", "i"],
+    ["g", "ü"],
+    ["g", "ie"],
+    ["g", "üe"],
+    ["g", "in"],
+    ["g", "ün"],
+    ["k", "i"],
+    ["k", "ü"],
+    ["k", "ie"],
+    ["k", "üe"],
+    ["k", "in"],
+    ["k", "ün"],
+    ["h", "i"],
+    ["h", "ü"],
+    ["h", "ie"],
+    ["h", "üe"],
+    ["h", "in"],
+    ["h", "ün"],
+  ],
+};
+
+// 当前选择的拼音组合
+let currentSelection = {
+  shengmu: null,
+  yunmu: null,
+  shengdiao: null,
+};
+
+// DOM 元素
+let elements = {};
+
+// 初始化
+document.addEventListener("DOMContentLoaded", function () {
+  initializeElements();
+  generateButtons();
+  bindEvents();
+
+  // 页面加载完成后运行测试
+  console.log("=== 拼音验证测试 ===");
+
+  // 测试有效组合
+  console.log("有效组合测试:");
+  console.log("ba:", isValidCombination("b", "a")); // 应该是 true
+  console.log("ma:", isValidCombination("m", "a")); // 应该是 true
+  console.log("zhang:", isValidCombination("zh", "ang")); // 应该是 true
+  console.log("zi:", isValidCombination("z", "i")); // 应该是 true
+
+  // 测试无效组合
+  console.log("无效组合测试:");
+  console.log("j + a:", isValidCombination("j", "a")); // 应该是 false
+  console.log("zh + i:", isValidCombination("zh", "i")); // 应该是 false
+  console.log("z + ü:", isValidCombination("z", "ü")); // 应该是 false
+
+  // 测试零声母组合
+  console.log("零声母组合测试:");
+  console.log("a:", isValidCombination("", "a")); // 应该是 true
+  console.log("o:", isValidCombination("", "o")); // 应该是 true
+  console.log("e:", isValidCombination("", "e")); // 应该是 true
+
+  console.log("验证表中总共有", PINYIN_VALIDATION_TABLE.size, "个有效组合");
+  console.log("=== 测试完成 ===");
+});
+
+function initializeElements() {
+  elements = {
+    currentShengmu: document.getElementById("current-shengmu"),
+    currentYunmu: document.getElementById("current-yunmu"),
+    currentShengdiao: document.getElementById("current-shengdiao"),
+    pinyinResult: document.getElementById("pinyin-result"),
+    playButton: document.getElementById("play-button"),
+    errorMessage: document.getElementById("error-message"),
+    shengmuGrid: document.getElementById("shengmu-grid"),
+    yunmuGrid: document.getElementById("yunmu-grid"),
+    shengdiaoGrid: document.getElementById("shengdiao-grid"),
+    clearButton: document.getElementById("clear-button"),
+    randomButton: document.getElementById("random-button"),
+  };
+}
+
+function generateButtons() {
+  generateShengmuButtons();
+  generateYunmuButtons();
+  generateShengdiaoButtons();
+}
+
+function generateShengmuButtons() {
+  elements.shengmuGrid.innerHTML = "";
+  pinyinData.shengmu.forEach((shengmu) => {
+    const button = document.createElement("button");
+    button.className = "selection-button shengmu-button";
+    button.textContent = shengmu;
+    button.onclick = () => selectShengmu(shengmu, button);
+    elements.shengmuGrid.appendChild(button);
+  });
+}
+
+function generateYunmuButtons() {
+  elements.yunmuGrid.innerHTML = "";
+  pinyinData.yunmu.forEach((yunmu) => {
+    const button = document.createElement("button");
+    button.className = "selection-button yunmu-button";
+    button.textContent = yunmu;
+    button.onclick = () => selectYunmu(yunmu, button);
+    elements.yunmuGrid.appendChild(button);
+  });
+}
+
+function generateShengdiaoButtons() {
+  elements.shengdiaoGrid.innerHTML = "";
+
+  pinyinData.shengdiao.forEach((tone) => {
+    const button = document.createElement("button");
+    button.className = "tone-button";
+    button.innerHTML = `
+            <div class="tone-example">${getToneDisplay(tone.tone)}</div>
+            <div class="tone-name">${tone.name}</div>
+        `;
+    button.onclick = () => selectShengdiao(tone, button);
+    elements.shengdiaoGrid.appendChild(button);
+  });
+}
+
+function getToneDisplay(toneNumber) {
+  // 如果已选择韵母，显示对应的带声调韵母
+  if (currentSelection.yunmu) {
+    return addToneMarks(currentSelection.yunmu, toneNumber);
+  }
+
+  // 默认显示
+  const defaultExamples = {
+    1: "ā",
+    2: "á",
+    3: "ǎ",
+    4: "à",
+    0: "a",
+  };
+
+  return defaultExamples[toneNumber];
+}
+
+function getMainVowel(yunmu) {
+  // 根据拼音标调规则确定主要元音：a > o > e > i > u > ü
+  const priority = ["a", "o", "e", "i", "u", "ü"];
+
+  for (let vowel of priority) {
+    if (yunmu.includes(vowel)) {
+      return vowel;
+    }
+  }
+  return null;
+}
+
+function addToneToVowel(vowel, tone) {
+  if (tone === 0) return vowel; // 轻声不加标记
+
+  const toneMarks = {
+    1: { a: "ā", o: "ō", e: "ē", i: "ī", u: "ū", ü: "ǖ" },
+    2: { a: "á", o: "ó", e: "é", i: "í", u: "ú", ü: "ǘ" },
+    3: { a: "ǎ", o: "ǒ", e: "ě", i: "ǐ", u: "ǔ", ü: "ǚ" },
+    4: { a: "à", o: "ò", e: "è", i: "ì", u: "ù", ü: "ǜ" },
+  };
+
+  return toneMarks[tone][vowel] || vowel;
+}
+
+function updateToneButtonsDisplay() {
+  const toneButtons = document.querySelectorAll(".tone-button");
+  toneButtons.forEach((button, index) => {
+    const toneExample = button.querySelector(".tone-example");
+    if (toneExample) {
+      toneExample.textContent = getToneDisplay(
+        pinyinData.shengdiao[index].tone
+      );
+    }
+  });
+}
+
+function selectShengmu(shengmu, button) {
+  // 清除之前的选择
+  document
+    .querySelectorAll(".shengmu-button")
+    .forEach((btn) => btn.classList.remove("selected"));
+
+  // 选择新的声母
+  button.classList.add("selected");
+  currentSelection.shengmu = shengmu;
+  elements.currentShengmu.textContent = shengmu;
+  elements.currentShengmu.classList.add("selected");
+
+  updatePinyinResult();
+}
+
+function selectYunmu(yunmu, button) {
+  // 清除之前的选择
+  document
+    .querySelectorAll(".yunmu-button")
+    .forEach((btn) => btn.classList.remove("selected"));
+
+  // 选择新的韵母
+  button.classList.add("selected");
+  currentSelection.yunmu = yunmu;
+  elements.currentYunmu.textContent = yunmu;
+  elements.currentYunmu.classList.add("selected");
+
+  // 更新声调按钮显示
+  updateToneButtonsDisplay();
+
+  updatePinyinResult();
+}
+
+function selectShengdiao(tone, button) {
+  // 清除之前的选择
+  document
+    .querySelectorAll(".tone-button")
+    .forEach((btn) => btn.classList.remove("selected"));
+
+  // 选择新的声调
+  button.classList.add("selected");
+  currentSelection.shengdiao = tone;
+  elements.currentShengdiao.textContent = tone.tone === 0 ? "轻" : tone.tone;
+  elements.currentShengdiao.classList.add("selected");
+
+  updatePinyinResult();
+}
+
+function updatePinyinResult() {
+  clearError();
+
+  if (!currentSelection.shengmu || !currentSelection.yunmu) {
+    elements.pinyinResult.textContent = "请选择声母和韵母";
+    elements.playButton.disabled = true;
+    return;
+  }
+
+  // 检查拼音组合是否合法
+  if (!isValidCombination(currentSelection.shengmu, currentSelection.yunmu)) {
+    showError(
+      `声母"${currentSelection.shengmu}"和韵母"${currentSelection.yunmu}"不能组合！`
+    );
+    elements.pinyinResult.textContent = "❌ 无效组合";
+    elements.playButton.disabled = true;
+
+    // 添加震动效果
+    elements.pinyinResult.classList.add("shake");
+    setTimeout(() => elements.pinyinResult.classList.remove("shake"), 500);
+    return;
+  }
+
+  // 生成完整的拼音
+  let fullPinyin = currentSelection.shengmu + currentSelection.yunmu;
+
+  // 添加声调标记
+  if (currentSelection.shengdiao) {
+    fullPinyin = addToneMarks(fullPinyin, currentSelection.shengdiao.tone);
+  }
+
+  elements.pinyinResult.textContent = fullPinyin;
+  elements.playButton.disabled = false;
+
+  // 添加成功效果
+  elements.pinyinResult.classList.add("bounce");
+  setTimeout(() => elements.pinyinResult.classList.remove("bounce"), 1000);
+}
+
+// 拼音组合验证函数 - 简化版
+function isValidCombination(shengmu, yunmu) {
+  // 简单检查：确保不在无效组合列表中
+  // 这个函数将覆盖文件中后面的复杂版本
+  const invalidCombinations = [
+    // j, q, x 只能与 i, ü 开头的韵母组合，不能与其他韵母组合
+    ["j", "a"],
+    ["j", "o"],
+    ["j", "u"],
+    ["j", "ai"],
+    ["j", "ao"],
+    ["j", "ou"],
+    ["j", "an"],
+    ["j", "un"],
+    ["j", "ang"],
+    ["j", "ong"],
+    ["q", "a"],
+    ["q", "o"],
+    ["q", "u"],
+    ["q", "ai"],
+    ["q", "ao"],
+    ["q", "ou"],
+    ["q", "an"],
+    ["q", "un"],
+    ["q", "ang"],
+    ["q", "ong"],
+    ["x", "a"],
+    ["x", "o"],
+    ["x", "u"],
+    ["x", "ai"],
+    ["x", "ao"],
+    ["x", "ou"],
+    ["x", "an"],
+    ["x", "un"],
+    ["x", "ang"],
+    ["x", "ong"],
+
+    // zh, ch, sh, r 不能与 i, ü 开头的韵母组合
+    ["zh", "i"],
+    ["zh", "ü"],
+    ["zh", "ie"],
+    ["zh", "üe"],
+    ["zh", "in"],
+    ["zh", "ün"],
+    ["ch", "i"],
+    ["ch", "ü"],
+    ["ch", "ie"],
+    ["ch", "üe"],
+    ["ch", "in"],
+    ["ch", "ün"],
+    ["sh", "i"],
+    ["sh", "ü"],
+    ["sh", "ie"],
+    ["sh", "üe"],
+    ["sh", "in"],
+    ["sh", "ün"],
+    ["r", "i"],
+    ["r", "ü"],
+    ["r", "ie"],
+    ["r", "üe"],
+    ["r", "in"],
+    ["r", "ün"],
+
+    // z, c, s 不能与 ü 开头的韵母组合
+    ["z", "ü"],
+    ["z", "üe"],
+    ["z", "ün"],
+    ["c", "ü"],
+    ["c", "üe"],
+    ["c", "ün"],
+    ["s", "ü"],
+    ["s", "üe"],
+    ["s", "ün"],
+  ];
+
+  // 检查是否在无效组合列表中
+  if (invalidCombinations.some(([s, y]) => s === shengmu && y === yunmu)) {
+    return false;
+  }
+
+  return true;
+}
+
+// 检查是否为已知的有效拼音组合
+function isKnownValidPinyin(pinyin) {
+  // 常见的有效拼音组合列表
+  const validPinyinList = [
+    // 单字母韵母组合
+    "ba",
+    "pa",
+    "ma",
+    "fa",
+    "da",
+    "ta",
+    "na",
+    "la",
+    "ga",
+    "ka",
+    "ha",
+    "za",
+    "ca",
+    "sa",
+    "zha",
+    "cha",
+    "sha",
+    "ra",
+    "bo",
+    "po",
+    "mo",
+    "fo",
+    "duo",
+    "tuo",
+    "nuo",
+    "luo",
+    "guo",
+    "kuo",
+    "huo",
+    "zuo",
+    "cuo",
+    "suo",
+    "zhuo",
+    "chuo",
+    "shuo",
+    "ruo",
+    "be",
+    "pe",
+    "me",
+    "de",
+    "te",
+    "ne",
+    "le",
+    "ge",
+    "ke",
+    "he",
+    "ze",
+    "ce",
+    "se",
+    "zhe",
+    "che",
+    "she",
+    "re",
+
+    // 双字母韵母组合
+    "bai",
+    "pai",
+    "mai",
+    "dai",
+    "tai",
+    "nai",
+    "lai",
+    "gai",
+    "kai",
+    "hai",
+    "zai",
+    "cai",
+    "sai",
+    "zhai",
+    "chai",
+    "shai",
+    "bei",
+    "pei",
+    "mei",
+    "fei",
+    "dei",
+    "nei",
+    "lei",
+    "gei",
+    "kei",
+    "hei",
+    "zei",
+    "shei",
+    "bao",
+    "pao",
+    "mao",
+    "dao",
+    "tao",
+    "nao",
+    "lao",
+    "gao",
+    "kao",
+    "hao",
+    "zao",
+    "cao",
+    "sao",
+    "zhao",
+    "chao",
+    "shao",
+    "rao",
+    "bou",
+    "pou",
+    "mou",
+    "fou",
+    "dou",
+    "tou",
+    "nou",
+    "lou",
+    "gou",
+    "kou",
+    "hou",
+    "zou",
+    "cou",
+    "sou",
+    "zhou",
+    "chou",
+    "shou",
+    "rou",
+
+    // 鼻音韵母组合
+    "ban",
+    "pan",
+    "man",
+    "fan",
+    "dan",
+    "tan",
+    "nan",
+    "lan",
+    "gan",
+    "kan",
+    "han",
+    "zan",
+    "can",
+    "san",
+    "zhan",
+    "chan",
+    "shan",
+    "ran",
+    "ben",
+    "pen",
+    "men",
+    "fen",
+    "den",
+    "nen",
+    "gen",
+    "ken",
+    "hen",
+    "zen",
+    "cen",
+    "sen",
+    "zhen",
+    "chen",
+    "shen",
+    "ren",
+    "bang",
+    "pang",
+    "mang",
+    "fang",
+    "dang",
+    "tang",
+    "nang",
+    "lang",
+    "gang",
+    "kang",
+    "hang",
+    "zang",
+    "cang",
+    "sang",
+    "zhang",
+    "chang",
+    "shang",
+    "rang",
+    "beng",
+    "peng",
+    "meng",
+    "feng",
+    "deng",
+    "teng",
+    "neng",
+    "leng",
+    "geng",
+    "keng",
+    "heng",
+    "zeng",
+    "ceng",
+    "seng",
+    "zheng",
+    "cheng",
+    "sheng",
+    "reng",
+    "dong",
+    "tong",
+    "nong",
+    "long",
+    "gong",
+    "kong",
+    "hong",
+    "zong",
+    "cong",
+    "song",
+    "zhong",
+    "chong",
+
+    // i/u/ü 系列
+    "bi",
+    "pi",
+    "mi",
+    "di",
+    "ti",
+    "ni",
+    "li",
+    "ji",
+    "qi",
+    "xi",
+    "zhi",
+    "chi",
+    "shi",
+    "ri",
+    "zi",
+    "ci",
+    "si",
+    "bu",
+    "pu",
+    "mu",
+    "fu",
+    "du",
+    "tu",
+    "nu",
+    "lu",
+    "gu",
+    "ku",
+    "hu",
+    "zhu",
+    "chu",
+    "shu",
+    "ru",
+    "zu",
+    "cu",
+    "su",
+    "ju",
+    "qu",
+    "xu",
+    "yu",
+    "lü",
+    "nü",
+
+    // 复合韵母
+    "bie",
+    "pie",
+    "mie",
+    "die",
+    "tie",
+    "nie",
+    "lie",
+    "jie",
+    "qie",
+    "xie",
+    "yue",
+    "diu",
+    "niu",
+    "liu",
+    "jiu",
+    "qiu",
+    "xiu",
+    "you",
+    "bin",
+    "pin",
+    "min",
+    "din",
+    "tin",
+    "nin",
+    "lin",
+    "jin",
+    "qin",
+    "xin",
+    "yin",
+    "bun",
+    "pun",
+    "mun",
+    "dun",
+    "tun",
+    "nun",
+    "lun",
+    "gun",
+    "kun",
+    "hun",
+    "zhun",
+    "chun",
+    "shun",
+    "run",
+    "zun",
+    "cun",
+    "sun",
+    "yun",
+    "jun",
+    "qun",
+    "xun",
+    "bing",
+    "ping",
+    "ming",
+    "ding",
+    "ting",
+    "ning",
+    "ling",
+    "jing",
+    "qing",
+    "xing",
+    "ying",
+  ];
+
+  return validPinyinList.includes(pinyin);
+}
+
+function addToneMarks(pinyin, tone) {
+  if (tone === 0) return pinyin; // 轻声不加标记
+
+  // 找到主要元音并添加声调标记
+  const toneMarks = {
+    1: { a: "ā", o: "ō", e: "ē", i: "ī", u: "ū", ü: "ǖ" },
+    2: { a: "á", o: "ó", e: "é", i: "í", u: "ú", ü: "ǘ" },
+    3: { a: "ǎ", o: "ǒ", e: "ě", i: "ǐ", u: "ǔ", ü: "ǚ" },
+    4: { a: "à", o: "ò", e: "è", i: "ì", u: "ù", ü: "ǜ" },
+  };
+
+  // 标调规则：a > o > e > i > u > ü
+  const priority = ["a", "o", "e", "i", "u", "ü"];
+
+  for (let vowel of priority) {
+    if (pinyin.includes(vowel)) {
+      const toneVowel = toneMarks[tone][vowel];
+      if (toneVowel) {
+        return pinyin.replace(vowel, toneVowel);
+      }
+      break;
+    }
+  }
+
+  return pinyin;
+}
+
+// 获取所有有效的拼音组合（用于调试和验证）
+function getAllValidPinyinCombinations() {
+  return Array.from(PINYIN_VALIDATION_TABLE).sort();
+}
+
+// 验证某个组合是否存在于表中（调试用）
+function debugValidation(shengmu, yunmu) {
+  const combination = (shengmu || "") + yunmu;
+  const isValid = PINYIN_VALIDATION_TABLE.has(combination);
+  console.log(
+    `检查组合: "${shengmu}" + "${yunmu}" = "${combination}" -> ${
+      isValid ? "有效" : "无效"
+    }`
+  );
+  return isValid;
+}
+
+// 显示所有有效拼音组合（调试用）
+function showAllValidCombinations() {
+  const combinations = getAllValidPinyinCombinations();
+  console.log("所有有效的拼音组合 (" + combinations.length + " 个):");
+  console.log(combinations.join(", "));
+  return combinations;
+}
+
+// 按声母分组显示有效组合
+function showCombinationsByInitial() {
+  const master = [
+    "",
+    "b",
+    "p",
+    "m",
+    "f",
+    "d",
+    "t",
+    "n",
+    "l",
+    "g",
+    "k",
+    "h",
+    "j",
+    "q",
+    "x",
+    "z",
+    "c",
+    "s",
+    "zh",
+    "ch",
+    "sh",
+    "r",
+    "y",
+    "w",
+  ];
+  const combinations = getAllValidPinyinCombinations();
+
+  master.forEach((initial) => {
+    const initialCombinations = combinations.filter((combo) =>
+      initial === ""
+        ? !master.slice(1).some((m) => combo.startsWith(m))
+        : combo.startsWith(initial)
+    );
+    if (initialCombinations.length > 0) {
+      console.log(`${initial || "零声母"}:`, initialCombinations.join(", "));
+    }
+  });
+}
+
+// 添加调试工具函数
+function debugPronunciation(shengmu, yunmu, tone) {
+  console.group(`🔍 发音调试: ${shengmu} + ${yunmu} (第${tone || 1}声)`);
+
+  // 检查拼音合法性
+  const isValid = isValidCombination(shengmu, yunmu);
+  console.log("拼音合法性:", isValid ? "✅ 有效" : "❌ 无效");
+
+  if (isValid) {
+    // 查找汉字
+    const character = getCharacterForPronunciation(shengmu, yunmu, tone);
+    console.log("找到汉字:", character ? `"${character}"` : "❌ 未找到");
+
+    if (character) {
+      console.log("即将播放发音:", character);
+      playPronunciation();
+    }
+  }
+
+  console.groupEnd();
+}
+
+// 为开发调试添加全局函数
+window.debugPinyin = debugPronunciation;
+
+// 绑定事件处理器
+function bindEvents() {
+  // 播放按钮
+  elements.playButton.onclick = playPronunciation;
+
+  // 清除按钮
+  elements.clearButton.onclick = clearSelection;
+
+  // 随机按钮
+  elements.randomButton.onclick = generateRandomCombination;
+}
+
+// 播放发音功能
+function playPronunciation() {
+  if (!currentSelection.shengmu || !currentSelection.yunmu) {
+    showError("请先选择声母和韵母！");
+    return;
+  }
+
+  const tone = currentSelection.shengdiao ? currentSelection.shengdiao.tone : 1;
+  const character = getCharacterForPronunciation(
+    currentSelection.shengmu,
+    currentSelection.yunmu,
+    tone
+  );
+
+  if (character) {
+    // 使用TTS播放发音
+    const utterance = new SpeechSynthesisUtterance(character);
+    utterance.lang = "zh-CN";
+    utterance.rate = 0.8;
+    utterance.pitch = 1;
+
+    speechSynthesis.speak(utterance);
+  } else {
+    showError("找不到对应的汉字进行发音！");
+  }
+}
+
+// 清除选择
+function clearSelection() {
+  currentSelection = {
+    shengmu: null,
+    yunmu: null,
+    shengdiao: null,
+  };
+
+  // 清除UI显示
+  elements.currentShengmu.textContent = "_";
+  elements.currentYunmu.textContent = "_";
+  elements.currentShengdiao.textContent = "_";
+  elements.pinyinResult.textContent = "请选择声母和韵母";
+  elements.playButton.disabled = true;
+
+  // 清除选中状态
+  document.querySelectorAll(".selection-button.selected").forEach((btn) => {
+    btn.classList.remove("selected");
+  });
+  document.querySelectorAll(".tone-button.selected").forEach((btn) => {
+    btn.classList.remove("selected");
+  });
+  document.querySelectorAll(".pinyin-part.selected").forEach((part) => {
+    part.classList.remove("selected");
+  });
+
+  clearError();
+}
+
+// 生成随机组合
+function generateRandomCombination() {
+  let availableShengmu = pinyinData.shengmu;
+  let availableYunmu = pinyinData.yunmu;
+
+  let attempts = 0;
+  const maxAttempts = 100;
+
+  while (attempts < maxAttempts) {
+    const randomShengmu =
+      availableShengmu[Math.floor(Math.random() * availableShengmu.length)];
+    const randomYunmu =
+      availableYunmu[Math.floor(Math.random() * availableYunmu.length)];
+
+    if (isValidCombination(randomShengmu, randomYunmu)) {
+      // 找到对应的按钮
+      const shengmuButtons = document.querySelectorAll(".shengmu-button");
+      const yunmuButtons = document.querySelectorAll(".yunmu-button");
+
+      let shengmuButton = null;
+      let yunmuButton = null;
+
+      // 查找声母按钮
+      for (let btn of shengmuButtons) {
+        if (btn.textContent === randomShengmu) {
+          shengmuButton = btn;
+          break;
+        }
+      }
+
+      // 查找韵母按钮
+      for (let btn of yunmuButtons) {
+        if (btn.textContent === randomYunmu) {
+          yunmuButton = btn;
+          break;
+        }
+      }
+
+      // 模拟点击按钮
+      if (shengmuButton) selectShengmu(randomShengmu, shengmuButton);
+      if (yunmuButton) selectYunmu(randomYunmu, yunmuButton);
+
+      // 随机选择声调
+      const randomTone =
+        pinyinData.shengdiao[
+          Math.floor(Math.random() * pinyinData.shengdiao.length)
+        ];
+      const toneButtons = document.querySelectorAll(".tone-button");
+      const toneIndex = pinyinData.shengdiao.findIndex(
+        (t) => t.tone === randomTone.tone
+      );
+      if (toneButtons[toneIndex])
+        selectShengdiao(randomTone, toneButtons[toneIndex]);
+
+      break;
+    }
+    attempts++;
+  }
+
+  if (attempts >= maxAttempts) {
+    showError("无法生成有效的随机组合！");
+  }
+}
+// 错误显示函数
+function showError(message) {
+  elements.errorMessage.textContent = message;
+  setTimeout(() => {
+    elements.errorMessage.textContent = "";
+  }, 3000);
+}
+
+function clearError() {
+  elements.errorMessage.textContent = "";
+}
+
+// 获取汉字用于发音的辅助函数
+function getCharacterForPronunciation(shengmu, yunmu, tone) {
+  const pinyinKey = shengmu + yunmu + (tone || 1);
+  return pinyinCharacterMap[pinyinKey] || null;
+}

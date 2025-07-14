@@ -12,11 +12,10 @@
     <div class="container">
       <header>
         <h1>🎵 拼音学习小游戏 🎵</h1>
-        <p>选择声母、韵母和声调，组合成拼音并听发音！</p>
       </header>
 
-      <main>
-        <!-- 当前组合显示区 -->
+      <main class="main-grid">
+        <!-- 左侧：当前组合显示区 -->
         <section class="current-combination">
           <h2>当前拼音组合</h2>
           <div class="pinyin-display">
@@ -31,36 +30,36 @@
             </button>
           </div>
           <div id="error-message" class="error-message"></div>
+
+          <!-- 控制按钮移到这里 -->
+          <div class="controls">
+            <button id="clear-button" class="control-button">🗑️ 清除</button>
+            <button id="random-button" class="control-button">🎲 随机</button>
+          </div>
         </section>
 
-        <!-- 声母选择区 -->
-        <section class="selection-area">
-          <h3>选择声母 (Initials)</h3>
+        <!-- 右侧上：声母选择区 -->
+        <section class="selection-area shengmu-area">
+          <h3>声母</h3>
           <div class="button-grid" id="shengmu-grid">
             <!-- 声母按钮将通过JavaScript生成 -->
           </div>
         </section>
 
-        <!-- 韵母选择区 -->
-        <section class="selection-area">
-          <h3>选择韵母 (Finals)</h3>
+        <!-- 右侧中：韵母选择区 -->
+        <section class="selection-area yunmu-area">
+          <h3>韵母</h3>
           <div class="button-grid" id="yunmu-grid">
             <!-- 韵母按钮将通过JavaScript生成 -->
           </div>
         </section>
 
-        <!-- 声调选择区 -->
-        <section class="selection-area">
-          <h3>选择声调 (Tones)</h3>
+        <!-- 右侧下：声调选择区 -->
+        <section class="selection-area shengdiao-area">
+          <h3>声调</h3>
           <div class="tone-grid" id="shengdiao-grid">
             <!-- 声调按钮将通过JavaScript生成 -->
           </div>
-        </section>
-
-        <!-- 控制按钮 -->
-        <section class="controls">
-          <button id="clear-button" class="control-button">🗑️ 清除选择</button>
-          <button id="random-button" class="control-button">🎲 随机组合</button>
         </section>
       </main>
 
@@ -69,6 +68,15 @@
       </footer>
     </div>
 
-    <script src="script.js"></script>
+    <!-- JavaScript 模块 - 按加载顺序排列 -->
+    <script src="js/validPinyin.js"></script>
+    <script src="js/pinyinValidation.js"></script>
+    <script src="js/pinyinData.js"></script>
+    <script src="js/toneUtils.js"></script>
+    <script src="js/uiComponents.js"></script>
+    <script src="js/pronunciation.js"></script>
+    <script src="js/appState.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/main.js"></script>
   </body>
 </html>

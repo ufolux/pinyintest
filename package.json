@@ -1,0 +1,29 @@
+{
+  "name": "pinyin-learning-game",
+  "version": "1.0.0",
+  "description": "儿童拼音学习小游戏 - A Chinese Pinyin Learning Game for Children",
+  "main": "index.html",
+  "scripts": {
+    "start": "open index.html",
+    "serve": "python3 -m http.server 8000"
+  },
+  "keywords": [
+    "pinyin",
+    "chinese",
+    "education",
+    "children",
+    "learning",
+    "game"
+  ],
+  "author": "Richard",
+  "license": "MIT",
+  "files": [
+    "index.html",
+    "style.css",
+    "js/",
+    "README.md"
+  ],
+  "directories": {
+    "js": "./js"
+  }
+}

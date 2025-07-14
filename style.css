@@ -8,70 +8,82 @@
 body {
   font-family: "Arial", "微软雅黑", sans-serif;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  min-height: 100vh;
+  height: 100vh;
   color: #333;
+  overflow: hidden;
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 10px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 /* 头部样式 */
 header {
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 10px;
   background: rgba(255, 255, 255, 0.95);
-  padding: 20px;
-  border-radius: 15px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
 header h1 {
   color: #4a5568;
-  font-size: 2.5em;
-  margin-bottom: 10px;
+  font-size: 2em;
+  margin-bottom: 0;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-header p {
-  color: #666;
-  font-size: 1.2em;
+/* 主网格布局 */
+.main-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  gap: 10px;
+  flex: 1;
+  height: calc(100vh - 120px);
 }
 
 /* 当前组合显示区 */
 .current-combination {
   background: rgba(255, 255, 255, 0.95);
-  padding: 25px;
-  border-radius: 15px;
-  margin-bottom: 25px;
+  padding: 15px;
+  border-radius: 10px;
   text-align: center;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  grid-row: 1 / 4;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .current-combination h2 {
   color: #4a5568;
-  margin-bottom: 20px;
-  font-size: 1.8em;
+  margin-bottom: 15px;
+  font-size: 1.4em;
 }
 
 .pinyin-display {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: 8px;
+  margin-bottom: 15px;
 }
 
 .pinyin-part {
   display: inline-block;
-  min-width: 60px;
-  height: 60px;
-  line-height: 60px;
-  font-size: 2em;
+  min-width: 45px;
+  height: 45px;
+  line-height: 45px;
+  font-size: 1.5em;
   font-weight: bold;
-  border-radius: 10px;
+  border-radius: 8px;
   text-align: center;
   border: 2px solid #e2e8f0;
   background: #f7fafc;
@@ -98,15 +110,19 @@ header p {
 }
 
 .result-display {
-  margin: 20px 0;
+  margin: 15px 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .pinyin-result {
-  font-size: 3em;
+  font-size: 2em;
   font-weight: bold;
   color: #4a5568;
-  margin-bottom: 15px;
-  min-height: 80px;
+  margin-bottom: 10px;
+  min-height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -120,12 +136,12 @@ header p {
   background: linear-gradient(135deg, #667eea, #764ba2);
   color: white;
   border: none;
-  padding: 15px 30px;
-  font-size: 1.2em;
-  border-radius: 25px;
+  padding: 10px 20px;
+  font-size: 1em;
+  border-radius: 20px;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 3px 10px rgba(102, 126, 234, 0.4);
 }
 
 .play-button:hover:not(:disabled) {
@@ -142,53 +158,67 @@ header p {
 .error-message {
   color: #e53e3e;
   font-weight: bold;
-  margin-top: 10px;
-  font-size: 1.1em;
-  min-height: 25px;
+  margin-top: 8px;
+  font-size: 1em;
+  min-height: 20px;
 }
 
 /* 选择区域样式 */
 .selection-area {
   background: rgba(255, 255, 255, 0.95);
-  margin-bottom: 20px;
-  padding: 20px;
-  border-radius: 15px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  padding: 12px;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.shengmu-area {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.yunmu-area {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.shengdiao-area {
+  grid-column: 2;
+  grid-row: 3;
 }
 
 .selection-area h3 {
   color: #4a5568;
-  margin-bottom: 15px;
-  font-size: 1.4em;
+  margin-bottom: 10px;
+  font-size: 1.2em;
   text-align: center;
 }
 
 .button-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-  gap: 10px;
-  max-width: 800px;
-  margin: 0 auto;
+  grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+  gap: 6px;
+  flex: 1;
 }
 
 .tone-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 15px;
-  max-width: 600px;
-  margin: 0 auto;
+  gap: 8px;
+  flex: 1;
 }
 
 .selection-button {
-  padding: 12px 8px;
-  font-size: 1.3em;
+  padding: 8px 4px;
+  font-size: 1em;
   font-weight: bold;
   border: 2px solid #e2e8f0;
-  border-radius: 10px;
+  border-radius: 8px;
   background: white;
   cursor: pointer;
   transition: all 0.3s ease;
-  min-height: 50px;
+  min-height: 35px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -217,15 +247,15 @@ header p {
 }
 
 .tone-button {
-  padding: 15px;
-  font-size: 1.5em;
+  padding: 8px;
+  font-size: 1.1em;
   font-weight: bold;
   border: 2px solid #e2e8f0;
-  border-radius: 10px;
+  border-radius: 8px;
   background: white;
   cursor: pointer;
   transition: all 0.3s ease;
-  min-height: 60px;
+  min-height: 40px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -246,12 +276,12 @@ header p {
 }
 
 .tone-name {
-  font-size: 0.8em;
-  margin-top: 5px;
+  font-size: 0.7em;
+  margin-top: 3px;
 }
 
 .tone-example {
-  font-size: 1.8em;
+  font-size: 1.3em;
   font-weight: bold;
   color: #4a5568;
 }
@@ -259,20 +289,20 @@ header p {
 /* 控制按钮 */
 .controls {
   text-align: center;
-  margin: 30px 0;
+  margin-top: 10px;
 }
 
 .control-button {
   background: linear-gradient(135deg, #667eea, #764ba2);
   color: white;
   border: none;
-  padding: 12px 25px;
-  margin: 0 10px;
-  font-size: 1.1em;
-  border-radius: 20px;
+  padding: 8px 15px;
+  margin: 0 5px;
+  font-size: 0.9em;
+  border-radius: 15px;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 3px 10px rgba(102, 126, 234, 0.4);
 }
 
 .control-button:hover {
@@ -284,52 +314,16 @@ header p {
 footer {
   text-align: center;
   background: rgba(255, 255, 255, 0.95);
-  padding: 15px;
-  border-radius: 15px;
-  margin-top: 20px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  padding: 8px;
+  border-radius: 10px;
+  margin-top: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
 footer p {
   color: #666;
-  font-size: 1.1em;
-}
-
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .container {
-    padding: 10px;
-  }
-
-  header h1 {
-    font-size: 2em;
-  }
-
-  .pinyin-result {
-    font-size: 2em;
-  }
-
-  .button-grid {
-    grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
-    gap: 8px;
-  }
-
-  .tone-grid {
-    grid-template-columns: repeat(5, 1fr);
-    gap: 8px;
-  }
-
-  .selection-button {
-    font-size: 1.1em;
-    padding: 10px 5px;
-    min-height: 45px;
-  }
-
-  .tone-button {
-    font-size: 1.2em;
-    padding: 10px;
-    min-height: 50px;
-  }
+  font-size: 0.9em;
+  margin: 0;
 }
 
 /* 动画效果 */
@@ -378,38 +372,82 @@ footer p {
 }
 
 /* 响应式设计 */
+@media (max-width: 1024px) {
+  .main-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto auto;
+    height: auto;
+  }
+
+  .current-combination {
+    grid-row: 1;
+    grid-column: 1;
+  }
+
+  .shengmu-area {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .yunmu-area {
+    grid-column: 1;
+    grid-row: 3;
+  }
+
+  .shengdiao-area {
+    grid-column: 1;
+    grid-row: 4;
+  }
+
+  body {
+    height: auto;
+    overflow: auto;
+  }
+
+  .container {
+    height: auto;
+  }
+}
+
 @media (max-width: 768px) {
   .container {
-    padding: 10px;
+    padding: 5px;
   }
 
   header h1 {
-    font-size: 2em;
+    font-size: 1.5em;
   }
 
   .pinyin-result {
-    font-size: 2em;
+    font-size: 1.5em;
   }
 
   .button-grid {
-    grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
-    gap: 8px;
+    grid-template-columns: repeat(auto-fit, minmax(45px, 1fr));
+    gap: 4px;
   }
 
   .tone-grid {
     grid-template-columns: repeat(5, 1fr);
-    gap: 8px;
+    gap: 4px;
   }
 
   .selection-button {
-    font-size: 1.1em;
-    padding: 10px 5px;
-    min-height: 45px;
+    font-size: 0.9em;
+    padding: 6px 3px;
+    min-height: 30px;
   }
 
   .tone-button {
+    font-size: 1em;
+    padding: 6px;
+    min-height: 35px;
+  }
+
+  .pinyin-part {
+    min-width: 35px;
+    height: 35px;
+    line-height: 35px;
     font-size: 1.2em;
-    padding: 10px;
-    min-height: 50px;
   }
 }
