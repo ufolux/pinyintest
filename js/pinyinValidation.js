@@ -1,24 +1,21 @@
-// 完整的拼音组合验证表 - 基于标准拼音规则
-const PINYIN_VALIDATION_TABLE = validPinyin;
-
 // 拼音组合验证函数 - 使用完整验证表
 function isValidCombination(shengmu, yunmu) {
   // 处理空声母的情况
   const shengmuToCheck = shengmu || "";
   const combination = shengmuToCheck + yunmu;
 
-  return Object.hasOwn(PINYIN_VALIDATION_TABLE, combination);
+  return Object.hasOwn(validPinyin, combination);
 }
 
 // 获取所有有效的拼音组合（用于调试和验证）
 function getAllValidPinyinCombinations() {
-  return Array.from(PINYIN_VALIDATION_TABLE).sort();
+  return Array.from(validPinyin).sort();
 }
 
 // 验证某个组合是否存在于表中（调试用）
 function debugValidation(shengmu, yunmu) {
   const combination = (shengmu || "") + yunmu;
-  const isValid = Object.hasOwn(PINYIN_VALIDATION_TABLE, combination);
+  const isValid = Object.hasOwn(validPinyin, combination);
   console.log(
     `检查组合: "${shengmu}" + "${yunmu}" = "${combination}" -> ${
       isValid ? "有效" : "无效"
