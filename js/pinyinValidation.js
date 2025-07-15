@@ -1,116 +1,5 @@
 // 完整的拼音组合验证表 - 基于标准拼音规则
-const PINYIN_VALIDATION_TABLE = (() => {
-  const master = [
-    "",
-    "b",
-    "p",
-    "m",
-    "f",
-    "d",
-    "t",
-    "n",
-    "l",
-    "g",
-    "k",
-    "h",
-    "j",
-    "q",
-    "x",
-    "z",
-    "c",
-    "s",
-    "zh",
-    "ch",
-    "sh",
-    "r",
-    "y",
-    "w",
-  ];
-  const slave = [
-    "a",
-    "o",
-    "e",
-    "i",
-    "u",
-    "ü",
-    "ai",
-    "ao",
-    "an",
-    "ang",
-    "ou",
-    "ong",
-    "ei",
-    "er",
-    "en",
-    "eng",
-    "iu",
-    "ie",
-    "in",
-    "ing",
-    "ia",
-    "iao",
-    "ian",
-    "iang",
-    "iong",
-    "ui",
-    "un",
-    "ua",
-    "uai",
-    "uan",
-    "uang",
-    "uo",
-    "üe",
-  ];
-
-  const table = [
-    "111111111111000111111011", // a
-    "111110000000000000000011", // o
-    "100101111111000111111110", // e
-    "011101111000111111111110", // i
-    "011111111111000111111101", // u
-    "000000000000111000000010", // ü
-    "111101111111000111111001", // ai
-    "111101111111000111111110", // ao
-    "111111111111000111111111", // an
-    "111111111111000111111111", // ang
-    "111111111111000111111111", // ou
-    "101111111111000111111110", // ong
-    "000001111111000111110110", // ei
-    "111111111111000110101001", // er
-    "100000000000000000000000", // en
-    "111111010111000111111101", // eng
-    "111111111111000111111101", // iu
-    "000101011000111000000000", // ie
-    "011101111000111000000000", // in
-    "011100011000111000000010", // ing
-    "011101111000111000000010", // ia
-    "000001001000111000000000", // iao
-    "011101111000111000000000", // ian
-    "011101111000111000000000", // iang
-    "000000011000111000000000", // iong
-    "000000000000111000000000", // ui
-    "000001100111000111111100", // un
-    "000001111111111111111100", // ua
-    "000000000111000000111100", // uai
-    "000000000111000000111000", // uan
-    "000001111111111111111110", // uang
-    "000000000111000000111000", // uo
-    "000001111111000111111100", // üe
-  ];
-
-  const validCombinations = new Set();
-
-  for (let i = 0; i < slave.length; i++) {
-    for (let j = 0; j < master.length; j++) {
-      if (table[i][j] === "1") {
-        const combination = master[j] + slave[i];
-        validCombinations.add(combination);
-      }
-    }
-  }
-
-  return validCombinations;
-})();
+const PINYIN_VALIDATION_TABLE = validPinyin;
 
 // 拼音组合验证函数 - 使用完整验证表
 function isValidCombination(shengmu, yunmu) {
@@ -118,7 +7,7 @@ function isValidCombination(shengmu, yunmu) {
   const shengmuToCheck = shengmu || "";
   const combination = shengmuToCheck + yunmu;
 
-  return PINYIN_VALIDATION_TABLE.has(combination);
+  return Object.hasOwn(PINYIN_VALIDATION_TABLE, combination);
 }
 
 // 获取所有有效的拼音组合（用于调试和验证）
@@ -129,7 +18,7 @@ function getAllValidPinyinCombinations() {
 // 验证某个组合是否存在于表中（调试用）
 function debugValidation(shengmu, yunmu) {
   const combination = (shengmu || "") + yunmu;
-  const isValid = PINYIN_VALIDATION_TABLE.has(combination);
+  const isValid = Object.hasOwn(PINYIN_VALIDATION_TABLE, combination);
   console.log(
     `检查组合: "${shengmu}" + "${yunmu}" = "${combination}" -> ${
       isValid ? "有效" : "无效"
@@ -326,7 +215,7 @@ function getPinyinByCharacter(character) {
 
 // 验证拼音组合并返回可用字符
 function validatePinyinAndGetCharacters(shengmu, yunmu) {
-  const basePinyin = shengmu ?? "" + yunmu ?? "";
+  const basePinyin = (shengmu ?? "") + (yunmu ?? "");
 
   // 首先检查拼音组合是否有效
   const isValid = isValidCombination(shengmu, yunmu);
