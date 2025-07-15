@@ -2,7 +2,6 @@ const validPinyin = {
   a: [
     { pinyin: "ā", char: "啊" },
     { pinyin: "á", char: "啊" },
-    { pinyin: "ǎ", char: "ǎ" },
     { pinyin: "à", char: "啊" },
     { pinyin: "a", char: "啊" },
   ],
@@ -25,7 +24,7 @@ const validPinyin = {
   ao: [
     { pinyin: "āo", char: "凹" },
     { pinyin: "áo", char: "熬" },
-    { pinyin: "ǎo", char: "ǎo" },
+    { pinyin: "ǎo", char: "袄" },
     { pinyin: "ào", char: "傲" },
   ],
   ba: [
@@ -384,7 +383,7 @@ const validPinyin = {
   e: [
     { pinyin: "ē", char: "阿" },
     { pinyin: "é", char: "俄" },
-    { pinyin: "ě", char: "ě" },
+    { pinyin: "ě", char: "恶" },
     { pinyin: "è", char: "饿" },
   ],
   ei: [],
@@ -1048,7 +1047,6 @@ const validPinyin = {
   nve: [{ pinyin: "nüè", char: "虐" }],
   o: [
     { pinyin: "ó", char: "哦" },
-    { pinyin: "ǒ", char: "ǒ" },
     { pinyin: "ò", char: "哦" },
     { pinyin: "o", char: "哦" },
   ],
