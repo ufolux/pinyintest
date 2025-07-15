@@ -99,11 +99,11 @@ header h1 {
 }
 
 .shengmu.selected {
-  background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+  background: linear-gradient(135deg, #4ecdc4, #44a08d);
 }
 
 .yunmu.selected {
-  background: linear-gradient(135deg, #4ecdc4, #44a08d);
+  background: linear-gradient(135deg, #ff6b6b, #ee5a52);
 }
 
 .shengdiao.selected {
@@ -175,13 +175,13 @@ header h1 {
 }
 
 .shengmu-area {
-  grid-column: 2;
-  grid-row: 1;
+  grid-column: 1;
+  grid-row: 2;
 }
 
 .yunmu-area {
-  grid-column: 1;
-  grid-row: 2;
+  grid-column: 2;
+  grid-row: 1;
 }
 
 .shengdiao-area {
@@ -500,12 +500,12 @@ footer p {
 
   .yunmu-area {
     grid-column: 1;
-    grid-row: 2;
+    grid-row: 3;
   }
 
   .shengmu-area {
     grid-column: 1;
-    grid-row: 3;
+    grid-row: 2;
   }
 
   .shengdiao-area {
